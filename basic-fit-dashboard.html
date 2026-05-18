@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basic-Fit España · Dashboard Data-Driven</title>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --orange:#FF6B00; --orange-d:#E55A00; --orange-l:#FFF1E6;
+  --black:#0F0F0F; --dark:#1A1A1A;
+  --g900:#1F2937; --g800:#374151; --g700:#4B5563; --g600:#52606D;
+  --g500:#6B7280; --g400:#9CA3AF; --g300:#D1D5DB; --g200:#E5E7EB; --g100:#F3F4F6; --g50:#F9FAFB;
+  --white:#fff; --bg:#F5F6F8;
+  --ok:#16A34A; --ok-b:#DCFCE7;
+  --wn:#D97706; --wn-b:#FEF3C7;
+  --bd:#DC2626; --bd-b:#FEE2E2;
+  --info:#2563EB; --info-b:#DBEAFE;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 14px rgba(0,0,0,.08);
+  --r:12px; --r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--g900);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font-family:inherit}
+
+/* ============ LAYOUT ============ */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--dark);color:var(--g300);position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 0}
+.brand{padding:0 20px 20px;border-bottom:1px solid #292929;display:flex;align-items:center;gap:10px}
+.brand-mark{width:38px;height:38px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;letter-spacing:-1px}
+.brand-name{color:#fff;font-weight:800;font-size:14px}
+.brand-sub{color:var(--g500);font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+.sidebar nav{padding:10px 0}
+.nav-section{padding:14px 20px 6px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#6B7380;font-weight:700}
+.sidebar .navlink{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#CBD0D7;text-decoration:none;font-size:13px;cursor:pointer;border-left:3px solid transparent;transition:.15s}
+.sidebar .navlink:hover{background:#222;color:#fff}
+.sidebar .navlink.active{background:linear-gradient(90deg,rgba(255,107,0,.18),transparent);color:#fff;border-left-color:var(--orange);font-weight:600}
+.nav-icon{width:18px;text-align:center;color:var(--orange)}
+
+.main{padding:22px 30px 60px;max-width:1600px;width:100%}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:16px}
+.page-title{font-size:22px;font-weight:800;color:var(--g900);display:flex;align-items:center;gap:10px}
+.page-sub{color:var(--g500);font-size:12px;margin-top:3px}
+.filter-tag{display:inline-flex;align-items:center;gap:6px;background:var(--orange-l);color:var(--orange-d);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+
+/* ============ FILTERS ============ */
+.filter-bar{background:#fff;border-radius:var(--r);padding:12px;margin-bottom:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;align-items:end}
+.f-group{display:flex;flex-direction:column;gap:4px}
+.f-group label{font-size:10px;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.f-group select,.f-group input{padding:7px 9px;border:1px solid var(--g200);border-radius:var(--r-sm);font-size:12.5px;background:#fff;font-family:inherit;color:var(--g800);transition:.15s}
+.f-group select:focus{border-color:var(--orange);outline:none}
+.f-group select[data-active="true"]{border-color:var(--orange);background:var(--orange-l);font-weight:600}
+.f-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn{padding:7px 12px;border:none;border-radius:var(--r-sm);cursor:pointer;font-size:12px;font-weight:600;transition:.15s}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{background:var(--orange-d)}
+.btn-ghost{background:transparent;color:var(--g700);border:1px solid var(--g200)}
+.btn-ghost:hover{background:var(--g100)}
+
+/* ============ BADGES ============ */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.b-case{background:#DBEAFE;color:#1E40AF}
+.b-sim{background:var(--orange-l);color:var(--orange-d)}
+.b-as{background:#F3E8FF;color:#6D28D9}
+.b-fc{background:#FCE7F3;color:#BE185D}
+.b-ok{background:var(--ok-b);color:var(--ok)}
+.b-wn{background:var(--wn-b);color:var(--wn)}
+.b-bd{background:var(--bd-b);color:var(--bd)}
+
+/* ============ GRID / CARDS ============ */
+.grid{display:grid;gap:14px}
+.grid-5{grid-template-columns:repeat(5,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.span-2{grid-column:span 2}
+@media (max-width:1200px){.grid-5{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){.grid-5,.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.span-2{grid-column:span 1}}
+.card{background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.card-title{font-size:14px;font-weight:700;color:var(--g900)}
+.card-sub{font-size:11.5px;color:var(--g500);margin-top:2px}
+
+/* ============ KPI ============ */
+.kpi{background:#fff;border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);position:relative;cursor:pointer;transition:.15s;border-top:3px solid transparent}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-top-color:var(--orange)}
+.kpi-label{font-size:11px;color:var(--g500);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.kpi-value{font-size:23px;font-weight:800;color:var(--g900);margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.kpi-delta{font-size:11.5px;font-weight:700}
+.kpi-delta.up{color:var(--ok)}
+.kpi-delta.down{color:var(--bd)}
+.kpi-dot{width:8px;height:8px;border-radius:50%}
+.kpi-dot.good{background:var(--ok)}
+.kpi-dot.warn{background:var(--wn)}
+.kpi-dot.crit{background:var(--bd)}
+.kpi-info{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--g100);color:var(--g500);font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+/* ============ TABLES ============ */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;padding:10px 12px;background:var(--g50);color:var(--g700);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--g200);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--g100);color:var(--g800);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--g50)}
+tbody tr.highlight{background:var(--orange-l)}
+tbody tr.highlight:hover{background:var(--orange-l)}
+
+/* ============ BARS ============ */
+.bar-row{display:grid;grid-template-columns:140px 1fr 80px;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{font-size:12px;color:var(--g700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{background:var(--g100);height:18px;border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-d));border-radius:5px;transition:width .4s}
+.bar-value{font-size:12px;font-weight:700;color:var(--g900);text-align:right;font-variant-numeric:tabular-nums}
+
+/* ============ DONUT ============ */
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.donut{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;transition:background .4s}
+.donut::after{content:'';position:absolute;width:95px;height:95px;background:#fff;border-radius:50%}
+.donut-center{position:relative;z-index:2;text-align:center}
+.donut-center .v{font-size:18px;font-weight:800}
+.donut-center .l{font-size:10px;color:var(--g500);text-transform:uppercase;letter-spacing:.5px}
+.legend{display:flex;flex-direction:column;gap:8px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--g700)}
+.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* ============ FUNNEL ============ */
+.funnel{display:flex;flex-direction:column;gap:6px}
+.funnel-step{display:flex;align-items:center;gap:12px}
+.funnel-bar{background:linear-gradient(90deg,var(--orange),var(--orange-d));color:#fff;padding:11px 14px;border-radius:6px;font-weight:700;font-size:13px;transition:width .4s;min-width:100px}
+.funnel-meta{font-size:12px;color:var(--g600);white-space:nowrap}
+
+/* ============ LINE CHART ============ */
+.line-chart{width:100%;height:200px;display:block}
+
+/* ============ HEATMAP ============ */
+.heatmap{display:grid;grid-template-columns:70px repeat(14,1fr);gap:3px;font-size:10px}
+.hm-head{text-align:center;color:var(--g500);font-weight:700;padding:4px 0}
+.hm-row-label{display:flex;align-items:center;color:var(--g700);font-weight:600;font-size:11px}
+.hm-cell{aspect-ratio:1.1/1;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:9px;cursor:pointer;transition:background .3s}
+
+/* ============ TABS ============ */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--g200);margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:8px 14px;cursor:pointer;font-size:12.5px;color:var(--g600);border-bottom:2px solid transparent;font-weight:600}
+.tab:hover{color:var(--orange)}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+
+/* ============ ALERTS ============ */
+.alert{padding:11px 13px;border-radius:var(--r-sm);margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px}
+.alert-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:13px;color:#fff}
+.a-ok{background:var(--ok-b)}.a-ok .alert-icon{background:var(--ok)}
+.a-wn{background:var(--wn-b)}.a-wn .alert-icon{background:var(--wn)}
+.a-bd{background:var(--bd-b)}.a-bd .alert-icon{background:var(--bd)}
+.a-info{background:var(--info-b)}.a-info .alert-icon{background:var(--info)}
+.alert-body strong{display:block;margin-bottom:2px;color:var(--g900);font-size:12.5px}
+
+/* ============ MODAL ============ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:var(--r);max-width:620px;width:100%;max-height:85vh;overflow-y:auto;padding:24px;box-shadow:0 10px 50px rgba(0,0,0,.3)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+.modal-title{font-size:18px;font-weight:800;color:var(--g900)}
+.modal-close{background:var(--g100);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:15px;font-weight:700}
+.modal-row{padding:9px 0;border-bottom:1px solid var(--g100)}
+.modal-row strong{display:block;font-size:10.5px;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;font-weight:700}
+.modal-row span{font-size:13px;color:var(--g800)}
+.formula{font-family:"SF Mono",Monaco,Menlo,monospace;background:var(--g50);padding:8px 10px;border-radius:6px;font-size:12px;color:var(--g800);display:inline-block}
+
+/* ============ FORECAST CTRL ============ */
+.fc-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;padding:16px;background:var(--g50);border-radius:var(--r-sm);margin-bottom:16px}
+.input-row{display:flex;flex-direction:column;gap:6px}
+.input-row label{font-size:11px;color:var(--g600);font-weight:700;display:flex;justify-content:space-between}
+.input-row .v{color:var(--orange);font-weight:800}
+input[type=range]{width:100%;accent-color:var(--orange)}
+.scenario-tabs{display:flex;gap:6px;margin-bottom:12px}
+.scen{padding:6px 12px;background:var(--g100);border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid transparent}
+.scen.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+/* ============ ECOSYSTEM ============ */
+.eco-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;align-items:stretch}
+.eco-stage{background:#fff;border:1px solid var(--g200);border-radius:var(--r-sm);padding:12px;position:relative}
+.eco-stage h4{font-size:11px;color:var(--orange);text-transform:uppercase;margin-bottom:8px;letter-spacing:.5px;font-weight:800}
+.eco-stage ul{list-style:none;font-size:11.5px;color:var(--g700)}
+.eco-stage li{padding:3px 0;display:flex;align-items:center;gap:6px}
+.eco-stage li::before{content:'·';color:var(--orange);font-weight:800}
+
+/* ============ COHORTS ============ */
+.cohort-grid{display:grid;grid-template-columns:90px repeat(6,1fr);gap:2px;font-size:11px}
+.cohort-grid > div{padding:8px;text-align:center;border-radius:3px;font-weight:600}
+.cohort-head{background:var(--g100);color:var(--g700)}
+
+/* ============ TOGGLE ============ */
+.toggle-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--g700);margin-right:14px}
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .slider{position:absolute;cursor:pointer;inset:0;background:var(--g300);border-radius:20px;transition:.2s}
+.toggle .slider:before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked + .slider{background:var(--orange)}
+.toggle input:checked + .slider:before{transform:translateX(16px)}
+
+/* ============ REC ============ */
+.rec-item{padding:11px 0;border-bottom:1px solid var(--g100);display:flex;gap:10px;align-items:flex-start}
+.rec-item:last-child{border-bottom:none}
+.rec-area{background:var(--orange-l);color:var(--orange-d);padding:3px 9px;border-radius:10px;font-size:10px;font-weight:800;text-transform:uppercase;flex-shrink:0;letter-spacing:.4px}
+.rec-text{font-size:12.5px;color:var(--g800)}
+.rec-impact{display:inline-block;margin-top:3px;font-size:11px;color:var(--g500)}
+
+/* ============ VIEWS ============ */
+.view{display:none}
+.view.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* Flash on filter update */
+.view.active.flash > *{animation:flashIn .45s ease}
+@keyframes flashIn{
+  0%{opacity:.35;transform:translateY(3px);filter:saturate(1.2)}
+  100%{opacity:1;transform:none;filter:saturate(1)}
+}
+.live-pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--orange);margin-right:6px;animation:pulse 1.4s ease infinite}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
+/* ============ SPARK / MISC ============ */
+.tag-list{display:flex;flex-wrap:wrap;gap:6px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--g500);font-size:11.5px}
+.divider{height:1px;background:var(--g200);margin:14px 0}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto;padding:10px 0}
+  .sidebar nav{display:flex;overflow-x:auto;padding:6px;gap:2px}
+  .sidebar .navlink{white-space:nowrap;border-left:none;border-bottom:3px solid transparent;padding:8px 12px}
+  .sidebar .navlink.active{border-bottom-color:var(--orange);border-left:none}
+  .nav-section{display:none}
+  .main{padding:16px}
+  .heatmap{font-size:8px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">BF</div>
+      <div>
+        <div class="brand-name">Basic-Fit</div>
+        <div class="brand-sub">España · BI</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <div class="nav-section">Análisis</div>
+      <a class="navlink active" data-view="overview"><span class="nav-icon">●</span>Executive Overview</a>
+      <a class="navlink" data-view="marketing"><span class="nav-icon">▲</span>Marketing Performance</a>
+      <a class="navlink" data-view="churn"><span class="nav-icon">◆</span>Retención & Churn</a>
+      <a class="navlink" data-view="revenue"><span class="nav-icon">€</span>Revenue & Suscripciones</a>
+      <a class="navlink" data-view="app"><span class="nav-icon">▶</span>App & Engagement</a>
+      <a class="navlink" data-view="region"><span class="nav-icon">◉</span>Región & Clubes</a>
+      <div class="nav-section">Predicción</div>
+      <a class="navlink" data-view="forecast"><span class="nav-icon">↗</span>Forecast & Escenarios</a>
+      <div class="nav-section">Estrategia</div>
+      <a class="navlink" data-view="data"><span class="nav-icon">⬢</span>Data Ecosystem</a>
+      <a class="navlink" data-view="insights"><span class="nav-icon">!</span>Insights & Recomendaciones</a>
+      <a class="navlink" data-view="method"><span class="nav-icon">?</span>Metodología & Supuestos</a>
+    </nav>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="page-head">
+      <div>
+        <div class="page-title" id="pageTitle">Executive Overview <span class="badge b-sim">Datos simulados</span></div>
+        <div class="page-sub" id="pageSub"><span class="live-pulse"></span>Vista filtrada con datos simulados: <span id="filterTag" style="color:var(--orange);font-weight:700">España total · Mensual · datos simulados</span></div>
+      </div>
+      <div class="f-actions">
+        <label class="toggle-row"><span>Fórmulas</span><span class="toggle"><input type="checkbox" id="togFormulas"><span class="slider"></span></span></label>
+        <label class="toggle-row"><span>Supuestos</span><span class="toggle"><input type="checkbox" id="togAssumptions" checked><span class="slider"></span></span></label>
+        <button class="btn btn-ghost" id="btnReset">Reset</button>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filter-bar">
+      <div class="f-group"><label>Periodo</label><select id="fPeriodo"><option>Mensual</option><option>Diario</option><option>Semanal</option><option>Trimestral</option><option>Anual</option></select></div>
+      <div class="f-group"><label>Región</label><select id="fRegion"><option>España total</option><option>Madrid</option><option>Cataluña</option><option>Andalucía</option><option>C. Valenciana</option><option>País Vasco</option></select></div>
+      <div class="f-group"><label>Ciudad</label><select id="fCiudad"><option>Todas</option><option>Madrid</option><option>Barcelona</option><option>Valencia</option><option>Sevilla</option><option>Bilbao</option></select></div>
+      <div class="f-group"><label>Club</label><select id="fClub"><option>Todos</option><option>Club Centro</option><option>Club Norte</option><option>Club Sur</option><option>Club Nuevo</option><option>Club Alta Ocupación</option></select></div>
+      <div class="f-group"><label>Canal</label><select id="fCanal"><option>Todos</option><option>SEO</option><option>SEM</option><option>Paid Social</option><option>RRSS</option><option>Directo</option><option>CRM</option><option>Email</option><option>Push</option><option>App</option><option>Referral</option><option>Offline</option></select></div>
+      <div class="f-group"><label>Plataforma</label><select id="fPlat"><option>Todas</option><option>Web</option><option>App</option><option>Club físico</option></select></div>
+      <div class="f-group"><label>Plan</label><select id="fPlan"><option>Todos</option><option>Basic</option><option>Premium</option><option>Otros</option></select></div>
+      <div class="f-group"><label>Segmento</label><select id="fSeg"><option>Todos</option><option>Nuevo socio</option><option>Activo</option><option>Riesgo churn</option><option>Premium</option><option>Alta frecuencia</option><option>Baja frecuencia</option></select></div>
+      <div class="f-group"><label>Idioma</label><select id="fIdioma"><option>Todos</option><option>Español</option><option>Catalán</option><option>Inglés</option></select></div>
+    </div>
+
+    <!-- ============ VIEW: OVERVIEW ============ -->
+    <section class="view active" data-view="overview">
+      <div class="grid grid-5" style="margin-bottom:14px" id="kpiOverview"></div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Evolución socios activos · 12M</div><div class="card-sub">Forecast últimos 3 meses · datos simulados</div></div>
+            <span class="badge b-fc">Forecast</span>
+          </div>
+          <svg class="line-chart" id="chartMembers" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div><div class="card-title">Evolución MRR · 12M</div><div class="card-sub">Ingreso recurrente · escalado por periodo</div></div>
+            <span class="badge b-sim">Simulado</span>
+          </div>
+          <svg class="line-chart" id="chartMRR" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Mix de planes</div><span class="badge b-as">Supuesto</span></div>
+          <div class="donut-wrap">
+            <div class="donut" id="donutMix"><div class="donut-center"><div class="v" id="donutTotal">108K</div><div class="l">Socios</div></div></div>
+            <div class="legend" id="donutLegend"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Comparativa por región</div><span class="badge b-sim">Simulado</span></div>
+          <div class="table-wrap"><table id="tableRegions"></table></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Alertas ejecutivas</div><span class="muted">Top 4</span></div>
+          <div id="alertsExec"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">3 decisiones recomendadas</div><span class="badge b-sim">Auto-generadas</span></div>
+          <div id="recsExec"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: MARKETING ============ -->
+    <section class="view" data-view="marketing">
+      <div class="grid grid-4" style="margin-bottom:14px" id="kpiMarketing"></div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Funnel AARRR</div><span class="badge b-sim">Simulado</span></div>
+          <div class="funnel" id="funnel"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">CAC por canal · €</div><span class="muted">Menor = mejor</span></div>
+          <div id="barsCAC"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><div class="card-title">ROAS por canal</div><span class="muted">Ingresos atribuidos / Inversión</span></div>
+        <div id="barsROAS"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Tabla completa de canales</div><div class="card-sub">Inversión, leads, altas, CAC, ROAS, LTV, churn y recomendación</div></div>
+          <span class="badge b-sim">Simulado</span>
+        </div>
+        <div class="table-wrap"><table id="tableChannels"></table></div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: CHURN ============ -->
+    <section class="view" data-view="churn">
+      <div class="grid grid-4" style="margin-bottom:14px" id="kpiChurn"></div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Churn por canal</div><span class="badge b-sim">Simulado</span></div>
+          <div id="barsChurnCanal"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Churn por plan & región</div><span class="muted">% mensual</span></div>
+          <div class="table-wrap"><table id="tableChurnSeg"></table></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><div class="card-title">Cohortes de retención · M0-M5</div><span class="badge b-sim">Simulado</span></div>
+        <div class="cohort-grid" id="cohorts"></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Predicción próximo mes</div><span class="badge b-fc">Forecast</span></div>
+          <div id="churnPredict"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Acciones anti-churn priorizadas</div></div>
+          <div id="actionsChurn"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: REVENUE ============ -->
+    <section class="view" data-view="revenue">
+      <div class="grid grid-4" style="margin-bottom:14px" id="kpiRevenue"></div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Revenue forecast · 6M</div><span class="badge b-fc">Forecast</span></div>
+          <svg class="line-chart" id="chartRevForecast" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Mix Basic vs Premium · evolución</div><span class="muted">% sobre el total</span></div>
+          <div id="barsMix"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">3 escenarios de revenue · 6 meses</div><span class="badge b-fc">Forecast</span></div>
+        <div class="table-wrap"><table id="tableScenarios"></table></div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: APP ============ -->
+    <section class="view" data-view="app">
+      <div class="grid grid-4" style="margin-bottom:14px" id="kpiApp"></div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Retención app · D7 / D30 / D90</div></div>
+          <div id="barsRetApp"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Funnel app → club físico</div></div>
+          <div class="funnel" id="funnelApp"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Cadena de valor de la app</div><span class="muted">Conexión engagement → LTV</span></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center" id="appChain"></div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: REGION ============ -->
+    <section class="view" data-view="region">
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Ranking de regiones</div><span class="badge b-sim">Simulado</span></div>
+          <div class="table-wrap"><table id="tableRegRank"></table></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Ranking top clubes</div></div>
+          <div class="table-wrap"><table id="tableClubRank"></table></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><div class="card-title">Heatmap de ocupación · día × franja horaria</div><span class="badge b-sim">Simulado</span></div>
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card"><div class="card-head"><div class="card-title">Alertas de saturación</div></div><div id="alertsClubs"></div></div>
+        <div class="card"><div class="card-head"><div class="card-title">Recomendación de expansión</div><span class="badge b-as">Supuesto</span></div><div id="expansionRecs"></div></div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: FORECAST ============ -->
+    <section class="view" data-view="forecast">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <div><div class="card-title">Configurador de escenario · 6 meses</div><div class="card-sub">Modifica los supuestos y observa el impacto en KPIs y revenue</div></div>
+          <div class="scenario-tabs">
+            <div class="scen" data-scen="cons">Conservador</div>
+            <div class="scen active" data-scen="base">Base</div>
+            <div class="scen" data-scen="opt">Optimista</div>
+          </div>
+        </div>
+        <div class="fc-controls">
+          <div class="input-row"><label>Altas mensuales <span class="v" id="vAltas">7.800</span></label><input type="range" min="1000" max="14000" step="100" value="7800" id="iAltas"></div>
+          <div class="input-row"><label>Churn mensual % <span class="v" id="vChurn">3,9</span></label><input type="range" min="1.0" max="10" step="0.1" value="3.9" id="iChurn"></div>
+          <div class="input-row"><label>ARPU € <span class="v" id="vArpu">24,5</span></label><input type="range" min="14" max="36" step="0.1" value="24.5" id="iArpu"></div>
+          <div class="input-row"><label>CAC € <span class="v" id="vCac">38</span></label><input type="range" min="10" max="90" step="1" value="38" id="iCac"></div>
+          <div class="input-row"><label>% conversión a Premium <span class="v" id="vPrem">30</span></label><input type="range" min="5" max="80" step="1" value="30" id="iPrem"></div>
+          <div class="input-row"><label>Inversión marketing mensual € <span class="v" id="vInv">300.000</span></label><input type="range" min="40000" max="800000" step="10000" value="300000" id="iInv"></div>
+        </div>
+        <div class="grid grid-4" id="fcResults"></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Forecast socios activos · 6M</div><span class="badge b-fc">Forecast</span></div>
+          <svg class="line-chart" id="chartFCMembers" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Forecast MRR · 6M</div><span class="badge b-fc">Forecast</span></div>
+          <svg class="line-chart" id="chartFCRev" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Recomendación del escenario</div></div>
+        <div id="fcRec"></div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: DATA ECOSYSTEM ============ -->
+    <section class="view" data-view="data">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head"><div class="card-title">Arquitectura de datos · flujo end-to-end</div><span class="badge b-as">Modelo</span></div>
+        <div class="eco-flow">
+          <div class="eco-stage"><h4>1. Canales</h4><ul><li>SEO / SEM</li><li>Paid Social</li><li>Email / CRM</li><li>Push / App</li><li>Offline / Club</li><li>Referral</li></ul></div>
+          <div class="eco-stage"><h4>2. Plataformas</h4><ul><li>Web</li><li>App móvil</li><li>Club físico</li><li>Call center</li></ul></div>
+          <div class="eco-stage"><h4>3. Captura</h4><ul><li>GA4 / Adobe</li><li>Mixpanel / Amplitude</li><li>Tag manager</li><li>Server-side</li></ul></div>
+          <div class="eco-stage"><h4>4. Integración / ETL</h4><ul><li>Fivetran / Stitch</li><li>Airflow / dbt</li><li>APIs y webhooks</li><li>Data quality</li></ul></div>
+          <div class="eco-stage"><h4>5. Data Warehouse</h4><ul><li>BigQuery / Snowflake</li><li>Customer 360</li><li>Capa semántica</li></ul></div>
+          <div class="eco-stage"><h4>6. Modelado</h4><ul><li>Churn model</li><li>LTV model</li><li>Segmentación</li><li>Forecasting</li></ul></div>
+          <div class="eco-stage"><h4>7. Dashboards</h4><ul><li>Power BI</li><li>Looker / Tableau</li><li>Self-service BI</li></ul></div>
+          <div class="eco-stage"><h4>8. Activación</h4><ul><li>CRM (Braze, Salesforce MC)</li><li>Personalización web</li><li>Audiencias paid</li><li>App push / in-app</li></ul></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Fuentes internas</div></div>
+          <div class="tag-list" id="srcInt"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Fuentes externas</div></div>
+          <div class="tag-list" id="srcExt"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: INSIGHTS ============ -->
+    <section class="view" data-view="insights">
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Top insights automáticos</div><span class="badge b-sim">Detección simulada</span></div>
+          <div id="insightsList"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Alertas por estado</div></div>
+          <div id="alertsAll"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Recomendaciones por área</div><div class="card-sub">Acciones priorizadas con impacto estimado</div></div>
+        </div>
+        <div class="tabs" id="recTabs">
+          <div class="tab active" data-rec="all">Todas</div>
+          <div class="tab" data-rec="dir">Dirección</div>
+          <div class="tab" data-rec="mkt">Marketing</div>
+          <div class="tab" data-rec="crm">CRM</div>
+          <div class="tab" data-rec="ops">Operaciones</div>
+          <div class="tab" data-rec="app">App</div>
+          <div class="tab" data-rec="exp">Expansión</div>
+          <div class="tab" data-rec="bi">Data/BI</div>
+        </div>
+        <div id="recList"></div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: METHOD ============ -->
+    <section class="view" data-view="method">
+      <div class="grid grid-2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Tipología de datos usados</div></div>
+          <div class="modal-row"><strong>Datos del caso <span class="badge b-case">Caso</span></strong><span>Información oficial Basic-Fit: 90 clubes en España, 100K+ socios, 380+ empleados, 3 planes (~19,99 € Basic, ~29,99 € Premium), 1.200+ clubes y 3,35M socios internacionales.</span></div>
+          <div class="modal-row"><strong>Datos simulados <span class="badge b-sim">Sim</span></strong><span>Series temporales, KPIs y métricas generadas a partir de los supuestos académicos manteniendo coherencia con el caso.</span></div>
+          <div class="modal-row"><strong>Supuestos académicos <span class="badge b-as">Sup</span></strong><span>Hipótesis razonables sobre churn, ARPU, CAC, LTV, mix de planes y ocupación, basadas en benchmarks de fitness low-cost.</span></div>
+          <div class="modal-row"><strong>Forecast <span class="badge b-fc">FC</span></strong><span>Proyecciones a 6 meses con escenario conservador / base / optimista.</span></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Buscador de KPIs</div><span class="muted" id="kpiCount"></span></div>
+          <input type="text" id="kpiSearch" placeholder="Buscar KPI por nombre, tipo o fórmula..." style="width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:8px;font-size:13px;margin-bottom:10px">
+          <div class="table-wrap" style="max-height:340px;overflow-y:auto"><table id="tableKPIs"></table></div>
+        </div>
+      </div>
+
+      <div class="grid grid-3" style="margin-bottom:14px">
+        <div class="card"><div class="card-title" style="margin-bottom:6px">KPI vs métrica</div><div class="muted">KPI = métrica clave alineada con objetivos estratégicos (SMART). Métrica = cualquier medida. Todo KPI es métrica, no toda métrica es KPI.</div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:6px">Data lifecycle</div><div class="muted">Collect → Store → Process → Analyze → Activate. Cada etapa exige gobernanza, calidad y trazabilidad.</div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:6px">Data quality</div><div class="muted">Exactitud, completitud, consistencia, credibilidad y actualidad. Auditoría continua sobre estas dimensiones.</div></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Técnicas analíticas sugeridas</div></div>
+          <div class="tag-list" id="techList"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Fuentes reales recomendadas</div></div>
+          <ul style="list-style:none;font-size:12.5px;color:var(--g700);line-height:1.9">
+            <li>· Basic-Fit Investor Relations (KPIs financieros oficiales)</li>
+            <li>· Google Analytics 4 + Search Console + Looker Studio</li>
+            <li>· Meta Ads, Google Ads, TikTok Ads (CAC, ROAS por canal)</li>
+            <li>· Mixpanel / Amplitude (engagement app)</li>
+            <li>· CRM Salesforce / Braze (cohortes, retención)</li>
+            <li>· INE, Eurostat (demografía, renta, hábitos)</li>
+            <li>· Similarweb, Semrush (competencia, share-of-search)</li>
+            <li>· NPS in-app / encuestas Net Promoter Score</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="mTitle">KPI</div>
+        <div class="muted" id="mType"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-row"><strong>Valor actual</strong><span id="mValue"></span></div>
+    <div class="modal-row"><strong>Variación vs periodo anterior</strong><span id="mDelta"></span></div>
+    <div class="modal-row"><strong>Estado</strong><span id="mStatus"></span></div>
+    <div class="modal-row"><strong>Fórmula</strong><br><span class="formula" id="mFormula"></span></div>
+    <div class="modal-row"><strong>Fuente de datos recomendada</strong><span id="mSource"></span></div>
+    <div class="modal-row"><strong>Decisión que permite tomar</strong><span id="mDecision"></span></div>
+    <div class="modal-row"><strong>Explicación</strong><span id="mExpl"></span></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   1. BASE & FILTER PROFILES (multiplicadores por filtro)
+   ============================================================ */
+const BASE = {
+  socios:108000, clubes:90, arpu:24.5,
+  mixBasic:0.65, mixPremium:0.30, mixOtros:0.05,
+  altasMes:7800, bajasMes:4200, churnMes:0.039,
+  cac:38, ltv:410, nps:42, app:0.61, ocupacion:0.68,
+  margen:0.35, vidaMedia:17, crecimientoMes:0.022,
+  inversionMkt:300000, ctr:0.029, openRate:0.31, leads:95800,
+  trafficWeb:2400000, trafficApp:1100000, freq:7.2, convRate:0.082
+};
+const MONTHS = ['Jun','Jul','Ago','Sep','Oct','Nov','Dic','Ene','Feb','Mar','Abr','May'];
+
+const PROF = {
+  periodo:{
+    'Diario':    {scale:1/30,  label:'/día'},
+    'Semanal':   {scale:7/30,  label:'/semana'},
+    'Mensual':   {scale:1,     label:'/mes'},
+    'Trimestral':{scale:3,     label:'/trim'},
+    'Anual':     {scale:12,    label:'/año'}
+  },
+  region:{
+    'España total':  {socios:1.00, churn:1.00, nps:1.00, occ:1.00, growth:1.00, cac:1.00, share:1.00},
+    'Madrid':        {socios:0.30, churn:0.92, nps:1.10, occ:1.06, growth:1.27, cac:0.95, share:1.20},
+    'Cataluña':      {socios:0.23, churn:1.05, nps:0.93, occ:1.01, growth:0.86, cac:1.05, share:0.95},
+    'Andalucía':     {socios:0.18, churn:1.13, nps:0.98, occ:0.94, growth:1.05, cac:1.10, share:0.85},
+    'C. Valenciana': {socios:0.13, churn:0.97, nps:1.02, occ:0.99, growth:1.14, cac:0.97, share:1.00},
+    'País Vasco':    {socios:0.08, churn:0.82, nps:1.14, occ:1.09, growth:1.41, cac:0.88, share:1.15}
+  },
+  ciudad:{
+    'Todas':    {socios:1.00, nps:1.00, occ:1.00},
+    'Madrid':   {socios:0.55, nps:1.10, occ:1.05},
+    'Barcelona':{socios:0.42, nps:0.95, occ:1.00},
+    'Valencia': {socios:0.22, nps:1.02, occ:0.96},
+    'Sevilla':  {socios:0.18, nps:0.92, occ:0.90},
+    'Bilbao':   {socios:0.14, nps:1.18, occ:1.10}
+  },
+  club:{
+    'Todos':               {socios:1.000, occ:1.00, nps:1.00, incid:1.00},
+    'Club Centro':         {socios:0.018, occ:1.24, nps:1.22, incid:1.45},
+    'Club Norte':          {socios:0.014, occ:1.05, nps:1.05, incid:0.85},
+    'Club Sur':            {socios:0.012, occ:0.88, nps:0.92, incid:1.15},
+    'Club Nuevo':          {socios:0.008, occ:0.65, nps:1.08, incid:0.55},
+    'Club Alta Ocupación': {socios:0.020, occ:1.32, nps:1.18, incid:1.30}
+  },
+  canal:{
+    'Todos':      {leads:1.00, cac:1.00, roas:1.00, conv:1.00, churn:1.00, label:'todos los canales'},
+    'SEO':        {leads:0.20, cac:0.52, roas:1.31, conv:1.40, churn:0.74, label:'SEO'},
+    'SEM':        {leads:0.15, cac:1.37, roas:0.79, conv:0.96, churn:0.92, label:'SEM'},
+    'Paid Social':{leads:0.22, cac:1.04, roas:0.67, conv:0.85, churn:1.13, label:'Paid Social'},
+    'RRSS':       {leads:0.18, cac:0.85, roas:0.78, conv:0.90, churn:1.05, label:'RRSS'},
+    'Directo':    {leads:0.10, cac:0.20, roas:2.10, conv:1.55, churn:0.65, label:'Directo'},
+    'CRM':        {leads:0.10, cac:0.17, roas:1.77, conv:1.65, churn:0.62, label:'CRM'},
+    'Email':      {leads:0.07, cac:0.14, roas:2.19, conv:1.78, churn:0.54, label:'Email'},
+    'Push':       {leads:0.04, cac:0.11, roas:1.65, conv:1.50, churn:0.59, label:'Push'},
+    'App':        {leads:0.09, cac:0.16, roas:1.52, conv:1.42, churn:0.49, label:'App'},
+    'Referral':   {leads:0.06, cac:0.10, roas:2.08, conv:1.95, churn:0.44, label:'Referral'},
+    'Offline':    {leads:0.07, cac:1.40, roas:0.42, conv:0.70, churn:1.31, label:'Offline'}
+  },
+  plat:{
+    'Todas':      {socios:1.00, traffic:1.00, appUse:1.00, club:1.00},
+    'Web':        {socios:0.55, traffic:1.95, appUse:0.10, club:0.30},
+    'App':        {socios:0.35, traffic:0.45, appUse:2.30, club:0.55},
+    'Club físico':{socios:0.78, traffic:0.15, appUse:0.45, club:2.45}
+  },
+  plan:{
+    'Todos':  {arpu:1.00, ltv:1.00, churn:1.00, mixB:0.65, mixP:0.30, mixO:0.05, share:1.00},
+    'Basic':  {arpu:0.82, ltv:0.87, churn:1.18, mixB:1.00, mixP:0.00, mixO:0.00, share:0.65},
+    'Premium':{arpu:1.22, ltv:1.27, churn:0.72, mixB:0.00, mixP:1.00, mixO:0.00, share:0.30},
+    'Otros':  {arpu:0.65, ltv:0.60, churn:1.40, mixB:0.00, mixP:0.00, mixO:1.00, share:0.05}
+  },
+  seg:{
+    'Todos':          {freq:1.00, churn:1.00, nps:1.00, app:1.00, ltv:1.00, size:1.00},
+    'Nuevo socio':    {freq:0.85, churn:1.35, nps:0.92, app:0.78, ltv:0.55, size:0.18},
+    'Activo':         {freq:1.05, churn:0.85, nps:1.05, app:1.08, ltv:1.12, size:0.52},
+    'Riesgo churn':   {freq:0.45, churn:2.50, nps:0.65, app:0.50, ltv:0.40, size:0.12},
+    'Premium':        {freq:1.30, churn:0.55, nps:1.20, app:1.25, ltv:1.45, size:0.30},
+    'Alta frecuencia':{freq:1.80, churn:0.40, nps:1.25, app:1.40, ltv:1.55, size:0.22},
+    'Baja frecuencia':{freq:0.35, churn:1.85, nps:0.75, app:0.55, ltv:0.50, size:0.19}
+  },
+  idioma:{
+    'Todos':  {ctr:1.00, conv:1.00, openRate:1.00, traffic:1.00},
+    'Español':{ctr:1.02, conv:1.05, openRate:1.03, traffic:0.78},
+    'Catalán':{ctr:1.10, conv:1.15, openRate:1.12, traffic:0.15},
+    'Inglés': {ctr:0.88, conv:0.78, openRate:0.92, traffic:0.07}
+  }
+};
+
+/* ============================================================
+   2. STATE & HELPERS
+   ============================================================ */
+let CURRENT_KPIS = [];
+let CURRENT_DATA = null;
+
+const esES = n => n.toLocaleString('es-ES');
+const fmtNum = n => esES(Math.round(n));
+const fmtMoney = n => {
+  n = Math.round(n);
+  if(n>=1e6) return (n/1e6).toFixed(2).replace('.',',')+' M€';
+  if(n>=10000) return Math.round(n/1000)+'K €';
+  if(n>=1000) return (n/1000).toFixed(1).replace('.',',')+'K €';
+  return esES(n)+' €';
+};
+const fmtPct = (n,dec=1,sign=true) => (sign && n>=0?'+':'')+n.toFixed(dec).replace('.',',')+'%';
+const fmtComma = (n,dec=1) => n.toFixed(dec).replace('.',',');
+const pctDelta = mult => fmtPct((mult-1)*100);
+
+function statusChurn(c){ return c<0.035?'good':c<0.045?'warn':'crit'; }
+function statusNPS(n){ return n>=45?'good':n>=30?'warn':'crit'; }
+function statusLTVCAC(r){ return r>=5?'good':r>=3?'warn':'crit'; }
+function statusOcc(o){ return o>=60&&o<=80?'good':o<60?'warn':'crit'; }
+function statusGrowth(g){ return g>=1.5?'good':g>=0?'warn':'crit'; }
+
+/* ============================================================
+   3. FILTER STATE & FILTERED DATA
+   ============================================================ */
+function getFilterState(){
+  return {
+    periodo: document.getElementById('fPeriodo').value,
+    region:  document.getElementById('fRegion').value,
+    ciudad:  document.getElementById('fCiudad').value,
+    club:    document.getElementById('fClub').value,
+    canal:   document.getElementById('fCanal').value,
+    plat:    document.getElementById('fPlat').value,
+    plan:    document.getElementById('fPlan').value,
+    seg:     document.getElementById('fSeg').value,
+    idioma:  document.getElementById('fIdioma').value
+  };
+}
+
+function getFilteredData(f){
+  const rp  = PROF.region[f.region]   || PROF.region['España total'];
+  const cip = PROF.ciudad[f.ciudad]   || PROF.ciudad['Todas'];
+  const clp = PROF.club[f.club]       || PROF.club['Todos'];
+  const cp  = PROF.canal[f.canal]     || PROF.canal['Todos'];
+  const ptp = PROF.plat[f.plat]       || PROF.plat['Todas'];
+  const pp  = PROF.plan[f.plan]       || PROF.plan['Todos'];
+  const sp  = PROF.seg[f.seg]         || PROF.seg['Todos'];
+  const ip  = PROF.idioma[f.idioma]   || PROF.idioma['Todos'];
+  const tp  = PROF.periodo[f.periodo] || PROF.periodo['Mensual'];
+
+  // Scope: cuánto del universo de socios estamos viendo
+  let scope = rp.socios;
+  if(f.ciudad!=='Todas') scope *= cip.socios;
+  if(f.club!=='Todos')   scope *= clp.socios;
+  if(f.plat!=='Todas')   scope *= ptp.socios;
+  if(f.seg!=='Todos')    scope *= sp.size;
+  if(f.plan!=='Todos')   scope *= pp.share;
+  scope = Math.max(scope, 0.0005);
+
+  const periodScale = tp.scale;
+
+  const socios     = Math.round(BASE.socios * scope);
+  const arpu       = +(BASE.arpu * pp.arpu).toFixed(2);
+  const mrr        = Math.round(socios * arpu * periodScale);
+  const arr        = Math.round(socios * arpu * 12);
+  const churnRate  = Math.min(0.20, BASE.churnMes * rp.churn * pp.churn * sp.churn * cp.churn);
+  const churnDisp  = Math.min(0.99, churnRate * periodScale);
+  const altas      = Math.round(BASE.altasMes * scope * cp.leads * cp.conv * periodScale * 0.95 + BASE.altasMes * scope * periodScale * 0.05);
+  const bajas      = Math.round(socios * churnRate * periodScale);
+  const netAdds    = altas - bajas;
+  const cac        = +(BASE.cac * rp.cac * cp.cac).toFixed(1);
+  const ltv        = Math.round(BASE.ltv * pp.ltv * sp.ltv);
+  const ltvCac     = +(ltv / Math.max(cac,1)).toFixed(2);
+  const payback    = +(cac / Math.max(arpu * BASE.margen, 1)).toFixed(1);
+  const nps        = Math.round(BASE.nps * rp.nps * clp.nps * sp.nps);
+  const occ        = Math.round(BASE.ocupacion * rp.occ * clp.occ * 100);
+  const appUse     = Math.round(BASE.app * sp.app * ptp.appUse * 100);
+  const freq       = +(BASE.freq * sp.freq).toFixed(1);
+  const visitFreq  = +(freq * periodScale).toFixed(1);
+
+  // Marketing
+  const leads      = Math.round(BASE.leads * scope * cp.leads * ip.traffic * periodScale);
+  const convRate   = Math.min(40, BASE.convRate * 100 * cp.conv * ip.conv);
+  const roas       = +(5.2 * cp.roas).toFixed(2);
+  const ctr        = +(BASE.ctr * 100 * ip.ctr * cp.conv).toFixed(2);
+  const openRate   = Math.round(BASE.openRate * 100 * ip.openRate);
+  const cpl        = +(BASE.cac * cp.cac / Math.max(cp.conv,0.3)).toFixed(2);
+  const cpa        = cac;
+  const cpc        = +(0.72 * cp.cac * ip.ctr).toFixed(2);
+  const cpm        = +(8.40 * cp.cac).toFixed(2);
+  const trafficWeb = Math.round(BASE.trafficWeb * scope * ptp.traffic * ip.traffic * periodScale);
+  const trafficApp = Math.round(BASE.trafficApp * scope * ptp.appUse * periodScale);
+  const inversionMkt = Math.round(BASE.inversionMkt * scope * periodScale);
+
+  // Otros
+  const rentClub   = Math.round(34500 * rp.occ * clp.occ * pp.arpu * periodScale);
+  const growthMoM  = +(BASE.crecimientoMes * 100 * rp.growth).toFixed(2);
+  const marketShare= +(12.4 * rp.share * pp.share).toFixed(1);
+  const retention  = +((1 - churnRate) * 100).toFixed(1);
+  const seoVis     = Math.round(34 * ip.traffic * cp.conv);
+  const engRRSS    = +(4.8 * cp.conv * ip.conv).toFixed(1);
+  const clickRate  = +(5.4 * ip.openRate * ip.ctr).toFixed(1);
+  const pushOpen   = +(18.6 * ip.openRate).toFixed(1);
+
+  return {
+    f, rp, cip, clp, cp, ptp, pp, sp, ip, tp,
+    scope, periodScale,
+    socios, arpu, mrr, arr, churnRate, churnDisp, altas, bajas, netAdds,
+    cac, ltv, ltvCac, payback, nps, occ, appUse, freq, visitFreq, retention,
+    leads, convRate, roas, ctr, openRate, cpl, cpa, cpc, cpm, trafficWeb, trafficApp, inversionMkt,
+    rentClub, growthMoM, marketShare, seoVis, engRRSS, clickRate, pushOpen,
+    mixB: pp.mixB, mixP: pp.mixP, mixO: pp.mixO
+  };
+}
+
+/* ============================================================
+   4. KPI BUILDER (dinámico a partir de d)
+   ============================================================ */
+function buildKPIs(d){
+  const dSocios  = (d.rp.growth - 1)*100 + 2.2;
+  const dChurn   = (d.rp.churn*d.pp.churn*d.sp.churn - 1)*100*0.1;
+  const dMRR     = (d.pp.arpu - 1)*100 + d.growthMoM;
+  const dARR     = dMRR;
+  const dARPU    = (d.pp.arpu - 1)*100 + 0.8;
+  const dCAC     = (d.cp.cac*d.rp.cac - 1)*100 + 4.1;
+  const dLTV     = (d.pp.ltv*d.sp.ltv - 1)*100 + 2.4;
+  const dLTVCAC  = dLTV - dCAC;
+  const dRet     = -dChurn;
+  const dAltas   = (d.cp.leads*d.cp.conv - 1)*100 + 5.1;
+  const dBajas   = dChurn;
+  const dNetAdds = dAltas - dBajas;
+  const dOcc     = (d.rp.occ*d.clp.occ - 1)*100 + 1.2;
+  const dNPS     = (d.rp.nps*d.sp.nps - 1)*100*2 + 3;
+  const dFreq    = (d.sp.freq - 1)*100;
+  const dApp     = (d.sp.app*d.ptp.appUse - 1)*100 + 2;
+  const dLeads   = (d.cp.leads*d.ip.traffic - 1)*100 + 4.8;
+  const dROAS    = (d.cp.roas - 1)*100 + 7.7;
+  const dCTR     = (d.ip.ctr - 1)*100 + 7.5;
+  const dOR      = (d.ip.openRate - 1)*100 + 3.3;
+  const dConv    = (d.cp.conv*d.ip.conv - 1)*100 + 3.7;
+
+  return [
+    {n:'Socios activos', v:fmtNum(d.socios), d:fmtPct(dSocios), s:statusGrowth(d.growthMoM), t:'Estratégico', f:'Σ socios con suscripción activa', src:'Sistema socios / CRM', dec:'Validar trayectoria de crecimiento', e:'Base de socios pagando cuota al cierre del periodo.'},
+    {n:'Altas', v:fmtNum(d.altas), d:fmtPct(dAltas), s:dAltas>0?'good':'warn', t:'Estratégico', f:'Σ nuevas suscripciones en el periodo', src:'CRM + Pagos', dec:'Evaluar captación', e:'Volumen de captación bruto del periodo.'},
+    {n:'Bajas', v:fmtNum(d.bajas), d:fmtPct(dBajas), s:dBajas<0?'good':'warn', t:'Estratégico', f:'Σ cancelaciones en el periodo', src:'CRM + Pagos', dec:'Activar retención', e:'Pérdida bruta de socios.'},
+    {n:'Net adds', v:(d.netAdds>=0?'+':'')+fmtNum(d.netAdds), d:fmtPct(dNetAdds), s:d.netAdds>0?'good':'crit', t:'Estratégico', f:'Altas − Bajas', src:'CRM', dec:'Sostener crecimiento neto', e:'Crecimiento neto de la base.'},
+    {n:'Churn rate', v:fmtComma(d.churnDisp*100,1)+'%', d:fmtPct(dChurn,1,true).replace('%','pp'), s:statusChurn(d.churnRate), t:'Estratégico', f:'Bajas / Socios iniciales', src:'CRM + Pagos', dec:'Lanzar campañas de retención', e:'Tasa de fuga del periodo.'},
+    {n:'Retention rate', v:fmtComma(d.retention,1)+'%', d:fmtPct(dRet,1,true).replace('%','pp'), s:d.retention>95?'good':'warn', t:'Estratégico', f:'1 − Churn rate', src:'CRM', dec:'Confirmar fidelización', e:'% de socios retenidos.'},
+    {n:'MRR', v:fmtMoney(d.mrr), d:fmtPct(dMRR), s:dMRR>0?'good':'crit', t:'Estratégico', f:'Socios activos × ARPU × periodo', src:'Sistema pagos', dec:'Validar salud financiera', e:'Ingreso recurrente del periodo.'},
+    {n:'ARR', v:fmtMoney(d.arr), d:fmtPct(dARR), s:dARR>0?'good':'crit', t:'Estratégico', f:'MRR mensual × 12', src:'Sistema pagos', dec:'Planificación anual', e:'Ingreso recurrente anualizado.'},
+    {n:'ARPU', v:fmtComma(d.arpu,2)+' €', d:fmtPct(dARPU), s:'good', t:'Estratégico', f:'Ingresos / Socios activos', src:'Sistema pagos', dec:'Estrategia de upgrade', e:'Ingreso medio por usuario.'},
+    {n:'LTV', v:d.ltv+' €', d:fmtPct(dLTV), s:'good', t:'Estratégico', f:'ARPU × Margen × Vida media', src:'Modelo LTV', dec:'Definir tope CAC', e:'Valor de vida estimado del socio.'},
+    {n:'CAC', v:fmtComma(d.cac,1)+' €', d:fmtPct(dCAC), s:dCAC<0?'good':'warn', t:'Estratégico', f:'Inv. marketing / Altas atribuibles', src:'Plataformas paid + CRM', dec:'Reasignar inversión', e:'Coste medio de adquisición.'},
+    {n:'LTV/CAC', v:fmtComma(d.ltvCac,1)+'x', d:fmtPct(dLTVCAC), s:statusLTVCAC(d.ltvCac), t:'Estratégico', f:'LTV / CAC', src:'Modelo', dec:'Si <3x → alerta', e:'Eficiencia del modelo de captación.'},
+    {n:'Ocupación media', v:d.occ+'%', d:fmtPct(dOcc,1,true).replace('%','pp'), s:statusOcc(d.occ), t:'Operativo', f:'Visitas / Capacidad', src:'Control de accesos', dec:'Decidir aperturas', e:'Carga media de los clubes.'},
+    {n:'NPS', v:''+d.nps, d:(dNPS>=0?'+':'')+Math.round(dNPS), s:statusNPS(d.nps), t:'Estratégico', f:'%Promotores − %Detractores', src:'Encuestas in-app', dec:'Mejorar experiencia', e:'Lealtad y recomendación.'},
+    {n:'Rentabilidad por club', v:fmtMoney(d.rentClub)+'/mes', d:fmtPct(dMRR), s:'good', t:'Estratégico', f:'Ingresos club − Costes club', src:'ERP', dec:'Cerrar / replicar', e:'Beneficio operativo medio por club.'},
+    {n:'Mix Basic/Premium', v:Math.round(d.mixB*100)+'/'+Math.round(d.mixP*100)+'/'+Math.round(d.mixO*100), d:'-', s:'good', t:'Estratégico', f:'Socios por plan / Total', src:'CRM', dec:'Empujar Premium', e:'Distribución de planes.'},
+    {n:'Frecuencia de visita', v:fmtComma(d.visitFreq,1), d:fmtPct(dFreq), s:d.freq>5?'good':'warn', t:'Operativo', f:'Visitas / Socios activos', src:'Control accesos', dec:'Reducir baja frecuencia', e:'Engagement físico.'},
+    {n:'Uso de app', v:d.appUse+'%', d:fmtPct(dApp,1,true).replace('%','pp'), s:d.appUse>50?'good':'warn', t:'Digital', f:'Usuarios app / Socios activos', src:'App analytics', dec:'Cross-sell digital', e:'Penetración digital.'},
+    {n:'Crecimiento por región', v:'+'+fmtComma(d.growthMoM,2)+'%', d:fmtPct((d.rp.growth-1)*100), s:statusGrowth(d.growthMoM), t:'Estratégico', f:'Δ socios / Socios iniciales', src:'CRM', dec:'Priorizar regiones', e:'Velocidad de expansión.'},
+    {n:'Market share estimado', v:fmtComma(d.marketShare,1)+'%', d:fmtPct((d.rp.share-1)*100), s:'good', t:'Estratégico', f:'Socios BF / Mercado gym ES', src:'IHRSA + INE', dec:'Foco competitivo', e:'Cuota frente al mercado fitness ES.'},
+    {n:'Tráfico web', v:fmtNum(d.trafficWeb), d:fmtPct((d.ptp.traffic*d.ip.traffic-1)*100+7.2), s:'good', t:'Marketing', f:'Σ sesiones', src:'GA4', dec:'Validar awareness', e:'Tráfico al sitio en el periodo.'},
+    {n:'Tráfico app', v:fmtNum(d.trafficApp), d:fmtPct((d.ptp.appUse-1)*100+9.4), s:'good', t:'Marketing', f:'Σ sesiones app', src:'Mixpanel', dec:'Confirmar engagement', e:'Sesiones móviles in-app.'},
+    {n:'Leads', v:fmtNum(d.leads), d:fmtPct(dLeads), s:'good', t:'Marketing', f:'Σ leads cualificados', src:'CRM', dec:'Alimenta funnel', e:'Volumen de leads del periodo.'},
+    {n:'Conversion rate', v:fmtComma(d.convRate,1)+'%', d:fmtPct(dConv,1,true).replace('%','pp'), s:d.convRate>7?'good':'warn', t:'Marketing', f:'Altas / Leads', src:'CRM', dec:'Optimizar landing', e:'Eficiencia del funnel.'},
+    {n:'Altas por canal', v:d.cp.label, d:'-', s:'good', t:'Marketing', f:'Altas atribuidas / Canal', src:'Atribución', dec:'Reasignar mix', e:'Canal activo en el filtro.'},
+    {n:'CPL', v:fmtComma(d.cpl,2)+' €', d:fmtPct((d.cp.cac-1)*100+1.1), s:d.cpl<6?'good':'warn', t:'Marketing', f:'Inversión / Leads', src:'Plataformas paid', dec:'Optimizar puja', e:'Coste por lead.'},
+    {n:'CPA', v:fmtComma(d.cpa,1)+' €', d:fmtPct(dCAC), s:d.cpa<40?'good':'warn', t:'Marketing', f:'Inversión / Conversiones', src:'Plataformas paid', dec:'Bid management', e:'Coste por adquisición.'},
+    {n:'CAC por canal', v:fmtComma(d.cac,1)+' €', d:fmtPct(dCAC), s:statusLTVCAC(d.ltvCac), t:'Marketing', f:'Inv canal / Altas canal', src:'Atribución', dec:'Top vs bottom', e:'CAC contextual al canal seleccionado.'},
+    {n:'ROAS', v:fmtComma(d.roas,1)+'x', d:fmtPct(dROAS), s:d.roas>3?'good':'warn', t:'Marketing', f:'Ingresos atribuidos / Inversión', src:'Plataformas paid', dec:'Subir presupuestos top', e:'Retorno publicitario.'},
+    {n:'ROI campañas', v:'+'+Math.round(d.roas*35)+'%', d:fmtPct(dROAS), s:'good', t:'Marketing', f:'(Beneficio − Inv) / Inv', src:'Finanzas + Mkt', dec:'Aprobar / desactivar', e:'Retorno neto estimado.'},
+    {n:'CTR', v:fmtComma(d.ctr,2)+'%', d:fmtPct(dCTR,1,true).replace('%','pp'), s:'good', t:'Marketing', f:'Clics / Impresiones', src:'Ads', dec:'Iterar creatividades', e:'Click-through rate.'},
+    {n:'CPC', v:fmtComma(d.cpc,2)+' €', d:fmtPct((d.cp.cac-1)*100+3), s:d.cpc<1?'good':'warn', t:'Marketing', f:'Inv / Clics', src:'Ads', dec:'Optimizar palabras clave', e:'Coste por clic.'},
+    {n:'CPM', v:fmtComma(d.cpm,2)+' €', d:fmtPct((d.cp.cac-1)*100-1), s:'good', t:'Marketing', f:'Inv / Impresiones × 1000', src:'Ads', dec:'Negociar inventario', e:'Coste por mil impresiones.'},
+    {n:'Conversión landing', v:fmtComma(11.4*d.cp.conv*d.ip.conv,1)+'%', d:fmtPct(dConv,1,true).replace('%','pp'), s:'good', t:'Marketing', f:'Leads / Visitas landing', src:'GA4 + CRM', dec:'A/B test continuo', e:'Eficiencia de landing.'},
+    {n:'SEO visibility', v:d.seoVis+'%', d:fmtPct((d.ip.traffic-1)*100+5.9,1,true).replace('%','pp'), s:'good', t:'Marketing', f:'Share of click SEO', src:'Search Console + Semrush', dec:'Plan editorial', e:'Visibilidad orgánica.'},
+    {n:'Engagement RRSS', v:fmtComma(d.engRRSS,1)+'%', d:fmtPct((d.ip.conv-1)*100+10), s:'good', t:'Marketing', f:'Interacciones / Impresiones', src:'Meta / TikTok', dec:'Doblar contenidos top', e:'Tasa de engagement social.'},
+    {n:'Open rate', v:d.openRate+'%', d:fmtPct(dOR,1,true).replace('%','pp'), s:'good', t:'Marketing', f:'Aperturas / Envíos', src:'Plataforma CRM', dec:'Optimizar asuntos', e:'% emails abiertos.'},
+    {n:'Click rate', v:fmtComma(d.clickRate,1)+'%', d:fmtPct(dOR,1,true).replace('%','pp'), s:'good', t:'Marketing', f:'Clics únicos / Envíos', src:'Plataforma CRM', dec:'Iterar CTAs', e:'Engagement email.'},
+    {n:'Push open rate', v:fmtComma(d.pushOpen,1)+'%', d:fmtPct(dOR,1,true).replace('%','pp'), s:'good', t:'Marketing', f:'Aperturas push / Envíos', src:'App / CRM', dec:'Personalizar timing', e:'Eficacia notificaciones.'},
+    {n:'Churn por canal', v:fmtComma(d.churnRate*d.cp.churn*100,1)+'%', d:fmtPct((d.cp.churn-1)*100,1,true).replace('%','pp'), s:statusChurn(d.churnRate*d.cp.churn), t:'Marketing', f:'Bajas canal / Socios canal', src:'Atribución + CRM', dec:'Filtrar canales tóxicos', e:'Calidad de captación.'}
+  ];
+}
+
+/* ============================================================
+   5. NAVIGATION
+   ============================================================ */
+document.querySelectorAll('#nav .navlink').forEach(a=>{
+  a.addEventListener('click',()=>{
+    const v = a.dataset.view;
+    document.querySelectorAll('#nav .navlink').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+    document.querySelector(`.view[data-view="${v}"]`).classList.add('active');
+    document.getElementById('pageTitle').innerHTML = a.textContent.trim() + ' <span class="badge b-sim">Datos simulados</span>';
+    flashActiveView();
+  });
+});
+
+/* ============================================================
+   6. COMPONENTS
+   ============================================================ */
+function kpiCard(k){
+  return `<div class="kpi" onclick='openModal(${JSON.stringify(k.n)})'>
+    <span class="kpi-info" title="${k.e}">i</span>
+    <div class="kpi-label">${k.n}</div>
+    <div class="kpi-value">${k.v}</div>
+    <div class="kpi-foot">
+      <span class="kpi-delta ${k.d.startsWith('-')?'down':'up'}">${k.d}</span>
+      <span class="kpi-dot ${k.s}"></span>
+    </div>
+  </div>`;
+}
+function pickKPIs(names){
+  return names.map(n=>CURRENT_KPIS.find(k=>k.n===n)).filter(Boolean);
+}
+function renderKPIs(){
+  document.getElementById('kpiOverview').innerHTML  = pickKPIs(['Socios activos','Net adds','Churn rate','MRR','ARPU','CAC','LTV','LTV/CAC','NPS','Ocupación media']).map(kpiCard).join('');
+  document.getElementById('kpiMarketing').innerHTML = pickKPIs(['Tráfico web','Leads','Conversion rate','CPL','CPA','ROAS','CTR','Open rate']).map(kpiCard).join('');
+  document.getElementById('kpiChurn').innerHTML     = pickKPIs(['Churn rate','Retention rate','Bajas','Net adds','Frecuencia de visita','Churn por canal']).map(kpiCard).join('');
+  document.getElementById('kpiRevenue').innerHTML   = pickKPIs(['MRR','ARR','ARPU','LTV','CAC','LTV/CAC','Rentabilidad por club','Mix Basic/Premium']).map(kpiCard).join('');
+  document.getElementById('kpiApp').innerHTML       = pickKPIs(['Uso de app','Tráfico app','Frecuencia de visita','NPS']).map(kpiCard).join('');
+}
+
+function openModal(name){
+  const k = CURRENT_KPIS.find(x=>x.n===name); if(!k) return;
+  document.getElementById('mTitle').textContent = k.n;
+  document.getElementById('mType').textContent  = 'Tipo: ' + k.t;
+  document.getElementById('mValue').textContent = k.v;
+  document.getElementById('mDelta').textContent = k.d;
+  document.getElementById('mStatus').innerHTML  = `<span class="badge ${k.s==='good'?'b-ok':k.s==='warn'?'b-wn':'b-bd'}">${k.s==='good'?'Bueno':k.s==='warn'?'Alerta':'Crítico'}</span>`;
+  document.getElementById('mFormula').textContent = k.f;
+  document.getElementById('mSource').textContent  = k.src;
+  document.getElementById('mDecision').textContent= k.dec;
+  document.getElementById('mExpl').textContent    = k.e;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+
+function fmtAxis(v){
+  if(v>=1e6) return (v/1e6).toFixed(1).replace('.',',')+'M';
+  if(v>=1000) return Math.round(v/1000)+'K';
+  if(v>=1) return Math.round(v).toString();
+  return v.toFixed(1).replace('.',',');
+}
+function lineChart(svgId, data, labels, color){
+  const svg = document.getElementById(svgId); if(!svg) return;
+  const w=600, h=200, pad={l:46,r:10,t:14,b:24};
+  const min = Math.min(...data)*0.92, max = Math.max(...data)*1.08;
+  const range = Math.max(max-min, 1);
+  const x = i => pad.l + (i*(w-pad.l-pad.r)/(data.length-1));
+  const y = v => pad.t + (1-(v-min)/range)*(h-pad.t-pad.b);
+  const path = data.map((v,i)=>(i?'L':'M')+x(i)+' '+y(v)).join(' ');
+  const area = path + ` L${x(data.length-1)} ${h-pad.b} L${x(0)} ${h-pad.b} Z`;
+  const dots = data.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${color}"/>`).join('');
+  const xlabs = labels.map((l,i)=>i%2===0?`<text x="${x(i)}" y="${h-6}" text-anchor="middle" fill="#9CA3AF" font-size="10">${l}</text>`:'').join('');
+  const yTicks=[min,(min+max)/2,max].map(v=>`<line x1="${pad.l}" y1="${y(v)}" x2="${w-pad.r}" y2="${y(v)}" stroke="#F3F4F6"/><text x="${pad.l-4}" y="${y(v)+4}" text-anchor="end" fill="#9CA3AF" font-size="10">${fmtAxis(v)}</text>`).join('');
+  svg.innerHTML = `<defs><linearGradient id="grad-${svgId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity=".35"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    ${yTicks}${xlabs}
+    <path d="${area}" fill="url(#grad-${svgId})"/>
+    <path d="${path}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>
+    ${dots}`;
+}
+
+function renderBars(target, items, fmt){
+  const el = document.getElementById(target); if(!el) return;
+  const max = Math.max(...items.map(i=>i.v), 0.0001);
+  el.innerHTML = items.map(i=>`
+    <div class="bar-row">
+      <div class="bar-label">${i.l}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(i.v/max*100).toFixed(1)}%;background:${i.c||'linear-gradient(90deg,var(--orange),var(--orange-d))'}"></div></div>
+      <div class="bar-value">${fmt?fmt(i.v):i.v}</div>
+    </div>`).join('');
+}
+
+function renderFunnel(target, steps){
+  const el = document.getElementById(target); if(!el) return;
+  const max = Math.max(steps[0].v, 1);
+  el.innerHTML = steps.map(s=>`
+    <div class="funnel-step">
+      <div class="funnel-bar" style="width:${Math.max(8, (s.v/max*100)).toFixed(0)}%">${s.l}</div>
+      <div class="funnel-meta">${esES(Math.round(s.v))} ${s.m||''}</div>
+    </div>`).join('');
+}
+
+function alertEl(type, title, body){
+  return `<div class="alert a-${type}"><div class="alert-icon">${type==='ok'?'✓':type==='wn'?'!':type==='bd'?'!':'i'}</div><div class="alert-body"><strong>${title}</strong>${body}</div></div>`;
+}
+
+/* ============================================================
+   7. OVERVIEW VIEW
+   ============================================================ */
+function buildMemberSeries(d){
+  const end = d.socios;
+  const start = end * 0.85;
+  const arr = [];
+  for(let i=0;i<12;i++){
+    const t = i/11;
+    arr.push(Math.round(start + (end-start)*t + Math.sin(i*1.3)*end*0.012));
+  }
+  return arr;
+}
+function buildMRRSeries(d){
+  return buildMemberSeries(d).map(s=>Math.round(s*d.arpu*d.periodScale));
+}
+
+function renderDonut(d){
+  const b = d.mixB, p = d.mixP;
+  document.getElementById('donutMix').style.background =
+    `conic-gradient(var(--orange) 0 ${b*360}deg, var(--dark) ${b*360}deg ${(b+p)*360}deg, var(--g300) ${(b+p)*360}deg 360deg)`;
+  document.getElementById('donutTotal').textContent = d.socios>=10000 ? Math.round(d.socios/1000)+'K' : esES(d.socios);
+  const sb = Math.round(d.socios * d.mixB);
+  const sp = Math.round(d.socios * d.mixP);
+  const so = Math.round(d.socios * d.mixO);
+  document.getElementById('donutLegend').innerHTML = `
+    <div class="legend-item"><span class="legend-dot" style="background:var(--orange)"></span>Basic · ${Math.round(d.mixB*100)}% · ${esES(sb)}</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--dark)"></span>Premium · ${Math.round(d.mixP*100)}% · ${esES(sp)}</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--g400)"></span>Otros · ${Math.round(d.mixO*100)}% · ${esES(so)}</div>`;
+}
+
+function renderTableRegions(d){
+  const regions = ['Madrid','Cataluña','Andalucía','C. Valenciana','País Vasco','Otras'];
+  const rowsData = regions.map(r=>{
+    const rp = PROF.region[r] || {socios:0.05, churn:1.18, nps:0.92, occ:0.92};
+    const rSocios = Math.round(BASE.socios * rp.socios * (d.pp.share||1));
+    const rChurn = +(BASE.churnMes * rp.churn * d.pp.churn * d.sp.churn * 100).toFixed(1);
+    const rNps = Math.round(BASE.nps * (rp.nps||0.92));
+    return {r, rSocios, rChurn, rNps};
+  });
+  document.getElementById('tableRegions').innerHTML = `
+    <thead><tr><th>Región</th><th>Socios</th><th>Clubes</th><th>Churn</th><th>NPS</th><th>Estado</th></tr></thead>
+    <tbody>${rowsData.map(x=>{
+      const st = x.rChurn<3.5?'good':x.rChurn<4.3?'warn':'crit';
+      const hl = d.f.region===x.r ? 'highlight' : '';
+      const clubes = Math.round((PROF.region[x.r]?.socios||0.05)*BASE.clubes);
+      return `<tr class="${hl}"><td><strong>${x.r}</strong></td><td>${esES(x.rSocios)}</td><td>${clubes}</td><td>${fmtComma(x.rChurn,1)}%</td><td>${x.rNps}</td><td><span class="kpi-dot ${st}"></span></td></tr>`;
+    }).join('')}</tbody>`;
+}
+
+function renderAlertsExec(d){
+  const a = [];
+  if(d.churnRate > 0.045) a.push(alertEl('bd','Churn crítico', `Tasa ${fmtComma(d.churnRate*100,1)}% en ${d.f.region}${d.f.seg!=='Todos'?' · segmento '+d.f.seg:''}. Activar retención urgente.`));
+  else if(d.churnRate > 0.040) a.push(alertEl('wn','Churn por encima del objetivo', `Tasa ${fmtComma(d.churnRate*100,1)}% vs objetivo 3,5%.`));
+  else a.push(alertEl('ok','Churn bajo control', `Tasa ${fmtComma(d.churnRate*100,1)}% por debajo del umbral.`));
+
+  if(d.ltvCac >= 8) a.push(alertEl('ok','Economía unitaria sólida', `LTV/CAC ${fmtComma(d.ltvCac,1)}x · espacio para escalar inversión.`));
+  else if(d.ltvCac >= 3) a.push(alertEl('wn','LTV/CAC justo', `Ratio ${fmtComma(d.ltvCac,1)}x. Optimizar CAC o subir ARPU.`));
+  else a.push(alertEl('bd','LTV/CAC crítico', `Ratio ${fmtComma(d.ltvCac,1)}x. Modelo no escalable hasta ajustar.`));
+
+  if(d.f.canal !== 'Todos'){
+    if(d.cp.roas > 1.5) a.push(alertEl('ok',`Canal ${d.f.canal} eficiente`, `ROAS ${fmtComma(d.roas,1)}x · CAC ${fmtComma(d.cac,1)}€.`));
+    else if(d.cp.roas < 0.8) a.push(alertEl('bd',`Canal ${d.f.canal} bajo rendimiento`, `ROAS ${fmtComma(d.roas,1)}x · revisar inversión.`));
+    else a.push(alertEl('info',`Canal ${d.f.canal} estándar`, `ROAS ${fmtComma(d.roas,1)}x · CAC ${fmtComma(d.cac,1)}€.`));
+  } else a.push(alertEl('info','Mix de canales activo', `CAC medio ${fmtComma(d.cac,1)}€ · ROAS medio ${fmtComma(d.roas,1)}x.`));
+
+  if(d.nps >= 50) a.push(alertEl('ok','NPS excelente', `${d.nps} puntos. Activar embajadores y referral.`));
+  else if(d.nps < 35) a.push(alertEl('bd','NPS bajo', `${d.nps} puntos. Auditoría operativa requerida.`));
+  else a.push(alertEl('info','MRR en línea', `Proyección anualizada ${fmtMoney(d.arr)}.`));
+
+  document.getElementById('alertsExec').innerHTML = a.slice(0,4).join('');
+}
+
+function renderRecsExec(d){
+  const recs = [];
+  if(d.churnRate > 0.04){
+    recs.push({a:'CRM', t:`Journey anti-churn focalizado en ${d.f.region}${d.f.seg!=='Todos'?' · '+d.f.seg:''}. Win-back a 14 días sin visita.`, i:'Impacto: −0,4pp churn'});
+  } else {
+    recs.push({a:'CRM', t:`Programa de fidelización Premium para socios con frecuencia > ${fmtComma(d.freq,1)}/mes.`, i:'Impacto: +1,2€ ARPU'});
+  }
+  if(d.f.canal === 'Paid Social' || d.cp.roas < 0.9){
+    recs.push({a:'Marketing', t:`Reasignar 25% del budget de ${d.f.canal!=='Todos'?d.f.canal:'Paid Social'} hacia Email + Referral (ROAS x2+).`, i:'Impacto: −8% CAC global'});
+  } else if(d.cp.roas > 1.5){
+    recs.push({a:'Marketing', t:`Escalar inversión en ${d.f.canal} (ROAS ${fmtComma(d.roas,1)}x). Probar incremental budget +30%.`, i:'Impacto: +'+Math.round(d.altas*0.3)+' altas'});
+  } else {
+    recs.push({a:'Marketing', t:'Mantener mix actual y probar reasignación 10% hacia Referral y CRM.', i:'Impacto: −5% CAC'});
+  }
+  if(d.occ > 80){
+    recs.push({a:'Operaciones', t:`Saturación detectada (ocupación ${d.occ}%). Ampliar horarios pico o evaluar nueva apertura en zona.`, i:'Impacto: +5 NPS'});
+  } else if(d.appUse < 50){
+    recs.push({a:'App', t:`Uso de app bajo (${d.appUse}%). Reto onboarding y push personalizado para activar.`, i:'Impacto: +11pp retención D30'});
+  } else {
+    recs.push({a:'Operaciones', t:`Promover upgrade a Premium en socios con >${Math.round(d.freq*1.4)} visitas/mes via in-app banner.`, i:'Impacto: +1,2€ ARPU'});
+  }
+  document.getElementById('recsExec').innerHTML = recs.slice(0,3).map(r=>`<div class="rec-item"><span class="rec-area">${r.a}</span><div><div class="rec-text">${r.t}</div><span class="rec-impact">${r.i}</span></div></div>`).join('');
+}
+
+/* ============================================================
+   8. MARKETING VIEW
+   ============================================================ */
+function renderTableChannels(d){
+  const canales = Object.keys(PROF.canal).filter(k=>k!=='Todos');
+  const totalInv = d.inversionMkt;
+  const rows = canales.map(c=>{
+    const cp = PROF.canal[c];
+    const invShare = (cp.leads / 1.18);
+    const inv = Math.round(totalInv * invShare * 0.6);
+    const leads = Math.round(BASE.leads * d.scope * cp.leads * d.periodScale * 0.18);
+    const altas = Math.round(leads * BASE.convRate * cp.conv * d.ip.conv);
+    const cac = +(BASE.cac * d.rp.cac * cp.cac).toFixed(1);
+    const ltv = Math.round(BASE.ltv * d.pp.ltv * d.sp.ltv * (cp.churn<1?1.1:0.9));
+    const roas = +(5.2 * cp.roas).toFixed(1);
+    const churn = +(BASE.churnMes * cp.churn * d.pp.churn * d.sp.churn * 100).toFixed(1);
+    const ltvCac = +(ltv/Math.max(cac,1)).toFixed(1);
+    const cpl = +(inv/Math.max(leads,1)).toFixed(2);
+    const cpa = +(inv/Math.max(altas,1)).toFixed(1);
+    const rec = ltvCac>10 ? 'Aumentar · top performer' : ltvCac>6 ? 'Mantener · optimizar' : ltvCac>3 ? 'Revisar · margen ajustado' : 'Reducir · CAC alto';
+    return {c, inv, leads, altas, cpl, cpa, cac, roas, ltv, ltvCac, churn, rec};
+  }).sort((a,b)=>b.ltvCac-a.ltvCac);
+
+  document.getElementById('tableChannels').innerHTML = `
+    <thead><tr><th>Canal</th><th>Inv. €</th><th>Leads</th><th>Altas</th><th>CPL</th><th>CPA</th><th>CAC</th><th>ROAS</th><th>LTV</th><th>LTV/CAC</th><th>Churn</th><th>Recomendación</th></tr></thead>
+    <tbody>${rows.map(r=>{
+      const st = r.ltvCac>10?'b-ok':r.ltvCac>6?'b-wn':'b-bd';
+      const hl = d.f.canal===r.c ? 'highlight' : '';
+      return `<tr class="${hl}"><td><strong>${r.c}</strong></td><td>${esES(r.inv)}</td><td>${esES(r.leads)}</td><td>${esES(r.altas)}</td><td>${fmtComma(r.cpl,2)}€</td><td>${fmtComma(r.cpa,1)}€</td><td>${fmtComma(r.cac,1)}€</td><td>${fmtComma(r.roas,1)}x</td><td>${r.ltv}€</td><td><span class="badge ${st}">${fmtComma(r.ltvCac,1)}x</span></td><td>${fmtComma(r.churn,1)}%</td><td>${r.rec}</td></tr>`;
+    }).join('')}</tbody>`;
+}
+
+function renderMarketingCharts(d){
+  const canales = Object.keys(PROF.canal).filter(k=>k!=='Todos');
+  const cacRows = canales.map(c=>{
+    const v = +(BASE.cac * d.rp.cac * PROF.canal[c].cac).toFixed(1);
+    return {l:c, v, c: v>50?'var(--bd)':v>35?'var(--wn)':'var(--ok)'};
+  }).sort((a,b)=>a.v-b.v);
+  renderBars('barsCAC', cacRows, v=>fmtComma(v,1)+' €');
+
+  const roasRows = canales.map(c=>({l:c, v:+(5.2 * PROF.canal[c].roas).toFixed(1)})).sort((a,b)=>b.v-a.v);
+  renderBars('barsROAS', roasRows, v=>fmtComma(v,1)+'x');
+
+  renderFunnel('funnel',[
+    {l:'Awareness',  v:d.trafficWeb,         m:'sesiones'},
+    {l:'Acquisition',v:d.leads,              m:'leads'},
+    {l:'Activation', v:d.altas,              m:'altas'},
+    {l:'Retention',  v:Math.round(d.altas*0.96), m:'retenidos'},
+    {l:'Revenue',    v:Math.round(d.altas*0.96), m:'pagando'},
+    {l:'Referral',   v:Math.round(d.altas*0.12), m:'referidos'}
+  ]);
+}
+
+/* ============================================================
+   9. CHURN VIEW
+   ============================================================ */
+function renderChurnView(d){
+  const canales = Object.keys(PROF.canal).filter(k=>k!=='Todos');
+  const channels = canales.map(c=>{
+    const v = +(BASE.churnMes * PROF.canal[c].churn * d.pp.churn * d.sp.churn * 100).toFixed(1);
+    return {l:c, v, c: v>4?'var(--bd)':v>3?'var(--wn)':'var(--ok)'};
+  }).sort((a,b)=>a.v-b.v);
+  renderBars('barsChurnCanal', channels, v=>fmtComma(v,1)+'%');
+
+  const segs = [
+    {name:'Basic · '+(d.f.region==='España total'?'Madrid':d.f.region), mP:PROF.plan.Basic, mR:PROF.region[d.f.region==='España total'?'Madrid':d.f.region]||PROF.region['Madrid']},
+    {name:'Premium · '+(d.f.region==='España total'?'Madrid':d.f.region), mP:PROF.plan.Premium, mR:PROF.region[d.f.region==='España total'?'Madrid':d.f.region]||PROF.region['Madrid']},
+    {name:'Basic · Cataluña', mP:PROF.plan.Basic, mR:PROF.region['Cataluña']},
+    {name:'Premium · Cataluña', mP:PROF.plan.Premium, mR:PROF.region['Cataluña']},
+    {name:'Basic · Andalucía', mP:PROF.plan.Basic, mR:PROF.region['Andalucía']},
+    {name:'Premium · Andalucía', mP:PROF.plan.Premium, mR:PROF.region['Andalucía']},
+    {name:'Basic · C. Valenciana', mP:PROF.plan.Basic, mR:PROF.region['C. Valenciana']},
+    {name:'Premium · País Vasco', mP:PROF.plan.Premium, mR:PROF.region['País Vasco']}
+  ];
+  const rows = segs.map(x=>({seg:x.name, v:+(BASE.churnMes * x.mP.churn * x.mR.churn * d.sp.churn * 100).toFixed(1)}));
+  document.getElementById('tableChurnSeg').innerHTML = `<thead><tr><th>Segmento</th><th>Churn</th><th>Estado</th></tr></thead><tbody>
+    ${rows.map(r=>{const s=r.v<3?'good':r.v<4?'warn':'crit';return `<tr><td>${r.seg}</td><td>${fmtComma(r.v,1)}%</td><td><span class="kpi-dot ${s}"></span></td></tr>`}).join('')}</tbody>`;
+
+  const baseRetention = (1 - d.churnRate);
+  const cohortBase = [];
+  for(let i=0;i<6;i++) cohortBase.push(Math.round(100 * Math.pow(baseRetention, i)));
+  const months=['Jun','Jul','Ago','Sep','Oct','Nov'];
+  let html='<div class="cohort-head">Cohorte</div>';
+  for(let i=0;i<6;i++) html+=`<div class="cohort-head">M${i}</div>`;
+  months.forEach((m,i)=>{
+    html+=`<div class="cohort-head">${m}</div>`;
+    cohortBase.forEach((v,j)=>{
+      if(j>=6-i){ html+=`<div style="background:var(--g50);color:var(--g300)">—</div>`; return; }
+      const val = Math.max(15, v - i*1.5 + Math.sin(i+j)*2.5);
+      const color = val>80?'var(--ok)':val>60?'#FCD34D':val>40?'var(--wn)':'var(--bd)';
+      html+=`<div style="background:${color};color:#fff">${val.toFixed(0)}%</div>`;
+    });
+  });
+  document.getElementById('cohorts').innerHTML = html;
+
+  const nextChurn = d.churnRate * 1.02;
+  const sociosRiesgo = Math.round(d.socios * nextChurn);
+  const mrrSaved = Math.round(d.socios * 0.005 * d.arpu);
+  const arrSaved = mrrSaved * 12;
+  document.getElementById('churnPredict').innerHTML = `
+    <div class="modal-row"><strong>Churn esperado · próximo mes</strong><span style="font-size:18px;font-weight:800;color:var(--wn)">${fmtComma(nextChurn*100,1)}% <span class="badge b-fc">FC</span></span></div>
+    <div class="modal-row"><strong>Socios en riesgo estimados</strong><span style="font-size:16px;font-weight:700">~${esES(sociosRiesgo)}</span></div>
+    <div class="modal-row"><strong>Impacto si churn baja 0,5 pp</strong><span style="color:var(--ok);font-weight:700">+${esES(Math.round(d.socios*0.005))} socios · +${fmtMoney(mrrSaved)} MRR · +${fmtMoney(arrSaved)} ARR</span></div>
+    <div class="modal-row"><strong>Acciones que mueven la aguja</strong><span>Win-back email + push, freeze de cuota antes de cancelar, upgrade a Premium con clase incluida.</span></div>`;
+
+  const actions = [];
+  if(d.f.seg==='Riesgo churn' || d.f.seg==='Baja frecuencia'){
+    actions.push({a:'CRM',t:`Journey específico para "${d.f.seg}": secuencia de 5 emails + push + incentivo.`,i:'-0,5pp churn estimado'});
+  } else {
+    actions.push({a:'CRM',t:'Journey "14 días sin visita": email + push + descuento mensual.',i:'-0,3pp churn estimado'});
+  }
+  if(d.appUse<55) actions.push({a:'App',t:`Activar app en ${d.f.region} (uso ${d.appUse}%). Programa 4 semanas.`,i:'-0,2pp churn'});
+  else actions.push({a:'App',t:'Personalizar feed por frecuencia para mantener engagement.',i:'+8% DAU'});
+  if(d.nps<40) actions.push({a:'Operaciones',t:`Auditoría operativa NPS<40 en ${d.f.region}.`,i:'+5 NPS'});
+  else actions.push({a:'Operaciones',t:'Auditar top-10 clubes con NPS<40 nacional.',i:'+5 NPS'});
+  actions.push({a:'Producto',t:'Opción de freeze mensual sin coste antes de cancelar.',i:'-0,4pp churn'});
+  document.getElementById('actionsChurn').innerHTML = actions.map(r=>`<div class="rec-item"><span class="rec-area">${r.a}</span><div><div class="rec-text">${r.t}</div><span class="rec-impact">${r.i}</span></div></div>`).join('');
+}
+
+/* ============================================================
+   10. REVENUE VIEW
+   ============================================================ */
+function renderRevenueView(d){
+  const mix = [
+    {l:'Ene · Basic', v:Math.round(d.mixB*100*1.03)},
+    {l:'Ene · Premium', v:Math.round(d.mixP*100*0.93)},
+    {l:'Mar · Basic', v:Math.round(d.mixB*100)},
+    {l:'Mar · Premium', v:Math.round(d.mixP*100)},
+    {l:'May · Basic', v:Math.round(d.mixB*100*0.97)},
+    {l:'May · Premium', v:Math.round(d.mixP*100*1.06)}
+  ];
+  renderBars('barsMix', mix, v=>v+'%');
+
+  const mrrSeries = [];
+  let m = d.mrr;
+  for(let i=0;i<7;i++){ mrrSeries.push(Math.round(m)); m *= (1 + d.growthMoM/100); }
+  lineChart('chartRevForecast', mrrSeries, ['Mes 0','M+1','M+2','M+3','M+4','M+5','M+6'], '#FF6B00');
+
+  const scenarios = [
+    {n:'Conservador', mult:{growth:0.6, cac:1.12, ltv:0.92}},
+    {n:'Base',        mult:{growth:1.0, cac:1.00, ltv:1.00}},
+    {n:'Optimista',   mult:{growth:1.5, cac:0.88, ltv:1.10}}
+  ].map(s=>{
+    const socios6 = Math.round(d.socios * Math.pow(1 + (d.growthMoM/100)*s.mult.growth, 6));
+    const mrr6 = Math.round(socios6 * d.arpu * d.periodScale);
+    const arr6 = socios6 * d.arpu * 12;
+    const cac = +(d.cac * s.mult.cac).toFixed(1);
+    const ltv = Math.round(d.ltv * s.mult.ltv);
+    const ltvCac = +(ltv/Math.max(cac,1)).toFixed(1);
+    const payback = +(cac/Math.max(d.arpu*BASE.margen,1)).toFixed(1);
+    const est = ltvCac>8 && d.churnRate<0.045 ? 'good' : ltvCac>4 ? 'warn' : 'crit';
+    return {n:s.n, socios:socios6, mrr:fmtMoney(mrr6), arr:fmtMoney(arr6), cac, ltv, ltvCac, payback, est};
+  });
+  document.getElementById('tableScenarios').innerHTML = `
+    <thead><tr><th>Escenario</th><th>Socios @6M</th><th>MRR</th><th>ARR</th><th>CAC</th><th>LTV</th><th>LTV/CAC</th><th>Payback</th><th>Estado</th></tr></thead>
+    <tbody>${scenarios.map(s=>`<tr><td><strong>${s.n}</strong></td><td>${esES(s.socios)}</td><td>${s.mrr}</td><td>${s.arr}</td><td>${fmtComma(s.cac,1)}€</td><td>${s.ltv}€</td><td>${fmtComma(s.ltvCac,1)}x</td><td>${fmtComma(s.payback,1)}m</td><td><span class="kpi-dot ${s.est}"></span></td></tr>`).join('')}</tbody>`;
+}
+
+/* ============================================================
+   11. APP VIEW
+   ============================================================ */
+function renderAppView(d){
+  const retApp = [
+    {l:'D1', v:Math.round(78*d.sp.app)},
+    {l:'D7', v:Math.round(54*d.sp.app)},
+    {l:'D14',v:Math.round(41*d.sp.app)},
+    {l:'D30',v:Math.round(32*d.sp.app)},
+    {l:'D60',v:Math.round(25*d.sp.app)},
+    {l:'D90',v:Math.round(19*d.sp.app)}
+  ];
+  renderBars('barsRetApp', retApp, v=>v+'%');
+
+  const downloads = Math.round(d.socios * 1.37 * d.ptp.appUse);
+  const activos   = Math.round(downloads * 0.445 * d.sp.app);
+  const programas = Math.round(activos * 0.58);
+  const visitan   = Math.round(programas * 0.63);
+  const upgrade   = Math.round(visitan * 0.13);
+  renderFunnel('funnelApp',[
+    {l:'Descargas app', v:downloads},
+    {l:'Usuarios activos', v:activos, m:'· '+Math.round(activos/Math.max(downloads,1)*100)+'%'},
+    {l:'Programas iniciados', v:programas, m:'· '+Math.round(programas/Math.max(activos,1)*100)+'% MAU'},
+    {l:'Visitan club tras app', v:visitan, m:'· '+Math.round(visitan/Math.max(programas,1)*100)+'%'},
+    {l:'Upgrade Premium', v:upgrade,  m:'· conversión '+fmtComma(upgrade/Math.max(visitan,1)*100,1)+'%'}
+  ]);
+
+  document.getElementById('appChain').innerHTML = [
+    {t:'Uso de app', v:d.appUse+'%'},
+    {t:'Frecuencia visitas', v:fmtComma(d.freq,1)+'/mes'},
+    {t:'Retención', v:fmtComma(d.retention,1)+'%'},
+    {t:'Churn', v:fmtComma(d.churnRate*100,1)+'%'},
+    {t:'LTV', v:d.ltv+'€'}
+  ].map((c,i,arr)=>`<div style="background:var(--orange-l);padding:12px 8px;border-radius:8px;position:relative">
+    <div class="muted" style="font-size:10px;text-transform:uppercase;font-weight:700">${c.t}</div>
+    <div style="font-size:18px;font-weight:800;color:var(--orange-d);margin-top:4px">${c.v}</div>
+    ${i<arr.length-1?'<div style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--orange);font-weight:800;z-index:2">→</div>':''}
+  </div>`).join('');
+}
+
+/* ============================================================
+   12. REGION VIEW
+   ============================================================ */
+function renderRegionView(d){
+  const regions = ['Madrid','Cataluña','Andalucía','C. Valenciana','País Vasco','Otras'];
+  const rowsData = regions.map(r=>{
+    const rp = PROF.region[r] || {socios:0.05, growth:0.9, occ:0.92, nps:0.92};
+    return {
+      name:r,
+      socios: Math.round(BASE.socios * rp.socios * (d.pp.share||1) * (d.sp.size||1)),
+      growth: +(BASE.crecimientoMes*100*rp.growth).toFixed(2),
+      occ: Math.round(BASE.ocupacion*(rp.occ||0.92)*100),
+      nps: Math.round(BASE.nps*(rp.nps||0.92)*d.sp.nps)
+    };
+  }).sort((a,b)=>b.growth-a.growth);
+  document.getElementById('tableRegRank').innerHTML = `
+    <thead><tr><th>#</th><th>Región</th><th>Socios</th><th>Crecimiento</th><th>Ocupación</th><th>NPS</th></tr></thead>
+    <tbody>${rowsData.map((r,i)=>{
+      const hl = d.f.region===r.name?'highlight':'';
+      return `<tr class="${hl}"><td>${i+1}</td><td><strong>${r.name}</strong></td><td>${esES(r.socios)}</td><td><span class="badge ${r.growth>2.5?'b-ok':r.growth>2?'b-wn':'b-bd'}">+${fmtComma(r.growth,1)}%</span></td><td>${r.occ}%</td><td>${r.nps}</td></tr>`;
+    }).join('')}</tbody>`;
+
+  const clubesBase = [
+    {n:'Club Madrid Centro', city:'Madrid',  base:{s:1820, occ:84, nps:51}, lectura:'Alta saturación'},
+    {n:'Club BCN Diagonal',  city:'Barcelona', base:{s:1640, occ:79, nps:48}, lectura:'Buen rendimiento'},
+    {n:'Club Bilbao Centro', city:'Bilbao',  base:{s:1490, occ:77, nps:52}, lectura:'Top NPS'},
+    {n:'Club Valencia Norte',city:'Valencia',base:{s:1380, occ:71, nps:44}, lectura:'Estable'},
+    {n:'Club Sevilla Este',  city:'Sevilla', base:{s:1240, occ:64, nps:39}, lectura:'Mejorar engagement'},
+    {n:'Club Málaga Oeste',  city:'Otras',   base:{s:980,  occ:58, nps:35}, lectura:'Revisar mix'}
+  ];
+  const clubMult = d.f.club==='Todos' ? 1 : (PROF.club[d.f.club]?.occ||1);
+  const clubs = clubesBase.map(c=>({
+    n:c.n,
+    s:Math.round(c.base.s * (d.sp.size||1) * (d.pp.share||1) * 4.5),
+    occ:Math.min(99,Math.round(c.base.occ * clubMult * d.rp.occ)),
+    nps:Math.round(c.base.nps * d.sp.nps),
+    r:c.lectura
+  })).sort((a,b)=>b.s-a.s);
+  document.getElementById('tableClubRank').innerHTML = `
+    <thead><tr><th>#</th><th>Club</th><th>Socios</th><th>Ocupación</th><th>NPS</th><th>Lectura</th></tr></thead>
+    <tbody>${clubs.map((c,i)=>`<tr><td>${i+1}</td><td><strong>${c.n}</strong></td><td>${esES(c.s)}</td><td>${c.occ}%</td><td>${c.nps}</td><td>${c.r}</td></tr>`).join('')}</tbody>`;
+
+  const hours = 14;
+  const days = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  let html = '<div></div>';
+  for(let h=0; h<hours; h++) html += `<div class="hm-head">${h+7}h</div>`;
+  const occMult = d.occ/68;
+  days.forEach((day, di)=>{
+    html += `<div class="hm-row-label">${day}</div>`;
+    for(let h=0;h<hours;h++){
+      const peak = (h>=10 && h<=12) || (h>=16 && h<=18) ? 80 : 35;
+      const weekendFactor = di>=5 ? 0.85 : 1;
+      let v = Math.round(peak * occMult * weekendFactor + (((di*7+h*3)%17)-8));
+      v = Math.max(5, Math.min(99, v));
+      const c = v>85?'var(--bd)':v>70?'var(--wn)':v>50?'#FCD34D':v>30?'#86EFAC':'var(--g200)';
+      html += `<div class="hm-cell" style="background:${c}" title="${day} ${h+7}h · ${v}%">${v}</div>`;
+    }
+  });
+  document.getElementById('heatmap').innerHTML = html;
+
+  const a = [];
+  if(d.occ>80) a.push(alertEl('bd',`Saturación en ${d.f.region}`, `Ocupación media ${d.occ}%. Riesgo NPS y cancelaciones.`));
+  else if(d.occ<55) a.push(alertEl('wn','Baja ocupación', `${d.occ}% · margen para captación adicional.`));
+  else a.push(alertEl('ok','Ocupación óptima', `${d.occ}% · zona de confort operativa.`));
+  if(d.f.club!=='Todos'){
+    if(d.clp.occ>1.15) a.push(alertEl('bd',`${d.f.club} saturado`, `Multiplicador de ocupación ${fmtComma(d.clp.occ,2)}x.`));
+    else if(d.clp.nps>1.10) a.push(alertEl('ok',`${d.f.club} con alto NPS`, `Replicar buenas prácticas en otros clubes.`));
+    else a.push(alertEl('info',`${d.f.club} en rango`, `Métricas operativas normales.`));
+  } else {
+    a.push(alertEl('wn','Club Madrid Centro · 92% pico', 'Concentración 18-20h. Estudiar segunda ubicación.'));
+  }
+  if(d.nps>=50) a.push(alertEl('ok','NPS top', `${d.nps} puntos. Activar embajadores y referral.`));
+  else if(d.nps<35) a.push(alertEl('bd','NPS bajo', `${d.nps} puntos. Auditoría operativa.`));
+  else a.push(alertEl('info','Bilbao demanda alta', 'Oportunidad de expansión detectada.'));
+  document.getElementById('alertsClubs').innerHTML = a.slice(0,4).join('');
+
+  const exp = [];
+  if(d.f.region==='Madrid' || d.rp.growth>1.2){
+    exp.push({a:'Expansión', t:`Madrid sur (Vallecas, Getafe): demanda alta · competencia media. Crecimiento +${fmtComma(d.growthMoM,1)}%.`, i:'+8.200 socios potenciales'});
+  } else {
+    exp.push({a:'Expansión', t:'Bilbao centro: añadir 2 clubes en 18 meses. Demanda no cubierta detectada.', i:'+5.400 socios potenciales'});
+  }
+  if(d.nps<40) exp.push({a:'Optimización', t:`Reformar clubes con NPS<35 antes de abrir nuevos en ${d.f.region}.`, i:'+12 NPS'});
+  else exp.push({a:'Optimización', t:'Replicar formato Club Centro en regiones top.', i:'+18% rentabilidad'});
+  exp.push({a:'Producto', t:`Membresía nocturna 21-23h en clubes con ocupación > ${d.occ}%.`, i:'+0,8€ ARPU'});
+  exp.push({a:'Data', t:`Modelo geo-demand para priorizar ${d.f.region}.`, i:'-30% tiempo decisión'});
+  document.getElementById('expansionRecs').innerHTML = exp.map(r=>`<div class="rec-item"><span class="rec-area">${r.a}</span><div><div class="rec-text">${r.t}</div><span class="rec-impact">${r.i}</span></div></div>`).join('');
+}
+
+/* ============================================================
+   13. FORECAST INTERACTIVO
+   ============================================================ */
+function getFCInputs(){
+  return {
+    altas: +document.getElementById('iAltas').value,
+    churn: +document.getElementById('iChurn').value / 100,
+    arpu:  +document.getElementById('iArpu').value,
+    cac:   +document.getElementById('iCac').value,
+    prem:  +document.getElementById('iPrem').value / 100,
+    inv:   +document.getElementById('iInv').value
+  };
+}
+
+function runForecast(){
+  const x = getFCInputs();
+  const d = CURRENT_DATA;
+  document.getElementById('vAltas').textContent = esES(x.altas);
+  document.getElementById('vChurn').textContent = fmtComma(x.churn*100,1);
+  document.getElementById('vArpu').textContent  = fmtComma(x.arpu,1);
+  document.getElementById('vCac').textContent   = x.cac;
+  document.getElementById('vPrem').textContent  = Math.round(x.prem*100);
+  document.getElementById('vInv').textContent   = esES(x.inv);
+
+  let socios = d ? d.socios : BASE.socios, monthsM=[], monthsR=[];
+  for(let i=0;i<7;i++){
+    monthsM.push(socios);
+    monthsR.push(Math.round(socios * x.arpu));
+    socios = socios + x.altas - Math.round(socios*x.churn);
+  }
+  const finalSocios = monthsM[6];
+  const finalMRR = monthsR[6];
+  const arr = finalMRR*12;
+  const ltv = +(x.arpu * BASE.margen * (1/x.churn)).toFixed(0);
+  const ltvCac = +(ltv/x.cac).toFixed(2);
+  const payback = +(x.cac/(x.arpu*BASE.margen)).toFixed(1);
+  const startSocios = monthsM[0];
+
+  document.getElementById('fcResults').innerHTML = [
+    {l:'Socios @ 6M', v:esES(finalSocios), d:fmtPct((finalSocios/startSocios-1)*100), s:finalSocios>startSocios?'good':'crit'},
+    {l:'MRR @ 6M',    v:fmtMoney(finalMRR), d:fmtPct((finalMRR/(startSocios*x.arpu)-1)*100), s:'good'},
+    {l:'ARR estimado',v:fmtMoney(arr), d:'-', s:'good'},
+    {l:'LTV/CAC',     v:fmtComma(ltvCac,1)+'x', d:'-', s:ltvCac>3?'good':'crit'},
+    {l:'LTV estimado',v:ltv+' €', d:'-', s:'good'},
+    {l:'Payback',     v:fmtComma(payback,1)+' meses', d:'-', s:payback<6?'good':'warn'},
+    {l:'Net adds/mes',v:'+'+esES(x.altas-Math.round(startSocios*x.churn)), d:'-', s:'good'},
+    {l:'Inversión/Alta', v:Math.round(x.inv/x.altas)+' €', d:'-', s:x.inv/x.altas<50?'good':'warn'}
+  ].map(k=>`<div class="kpi"><div class="kpi-label">${k.l}</div><div class="kpi-value">${k.v}</div><div class="kpi-foot"><span class="kpi-delta up">${k.d}</span><span class="kpi-dot ${k.s}"></span></div></div>`).join('');
+
+  lineChart('chartFCMembers', monthsM, ['M0','M+1','M+2','M+3','M+4','M+5','M+6'], '#FF6B00');
+  lineChart('chartFCRev',     monthsR, ['M0','M+1','M+2','M+3','M+4','M+5','M+6'], '#1A1A1A');
+
+  let rec='', state='ok';
+  if(ltvCac<3){ rec='Modelo no rentable. Reducir CAC y subir ARPU antes de escalar.'; state='bd'; }
+  else if(ltvCac<6){ rec='Eficiencia mejorable. Reasignar inversión a canales con mayor ROAS y reforzar retención.'; state='wn'; }
+  else if(x.churn>0.045){ rec='Crecimiento saludable pero churn alto. Prioridad: acciones anti-churn.'; state='wn'; }
+  else { rec='Escenario sólido. Cumple LTV/CAC>3x y payback<6m. Escalar canales top y empujar Premium.'; state='ok'; }
+  document.getElementById('fcRec').innerHTML = alertEl(state, 'Lectura del escenario', rec);
+}
+['Altas','Churn','Arpu','Cac','Prem','Inv'].forEach(k=>document.getElementById('i'+k).addEventListener('input', runForecast));
+document.querySelectorAll('.scen').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.scen').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const presets = {
+      cons:{altas:5500, churn:5.0, arpu:23, cac:48, prem:22, inv:380000},
+      base:{altas:7800, churn:3.9, arpu:24.5, cac:38, prem:30, inv:300000},
+      opt: {altas:10500, churn:3.0, arpu:26, cac:30, prem:40, inv:340000}
+    };
+    const p = presets[b.dataset.scen];
+    document.getElementById('iAltas').value=p.altas;
+    document.getElementById('iChurn').value=p.churn;
+    document.getElementById('iArpu').value=p.arpu;
+    document.getElementById('iCac').value=p.cac;
+    document.getElementById('iPrem').value=p.prem;
+    document.getElementById('iInv').value=p.inv;
+    runForecast();
+  });
+});
+
+/* ============================================================
+   14. DATA ECOSYSTEM
+   ============================================================ */
+function renderEco(){
+  const ints=['CRM','Sistema de socios','Pagos','Web analytics','App analytics','Email','Push','Campañas','Call center','Reservas','Control de acceso','ERP','NPS','Reviews','RRSS'];
+  const exts=['Mercado','Competencia','Demografía','Google Trends','Search Console','Similarweb','Meta Ads Library','INE','Datos geográficos','Movilidad'];
+  document.getElementById('srcInt').innerHTML = ints.map(s=>`<span class="badge b-sim" style="font-size:11px;padding:5px 10px">${s}</span>`).join('');
+  document.getElementById('srcExt').innerHTML = exts.map(s=>`<span class="badge b-as" style="font-size:11px;padding:5px 10px">${s}</span>`).join('');
+}
+
+/* ============================================================
+   15. INSIGHTS & RECOMENDACIONES
+   ============================================================ */
+function renderInsights(d){
+  const insights = [];
+  if(d.cp.roas>1.5) insights.push(alertEl('info',`${d.f.canal} es altamente rentable`, `ROAS ${fmtComma(d.roas,1)}x · CAC ${fmtComma(d.cac,1)}€ · churn ${fmtComma(d.churnRate*100*d.cp.churn,1)}%.`));
+  else if(d.cp.roas<0.9) insights.push(alertEl('wn',`${d.f.canal} bajo rendimiento`, `ROAS ${fmtComma(d.roas,1)}x. Reasignar presupuesto.`));
+  else insights.push(alertEl('info','Email + Referral son los canales estrella', 'ROAS combinado >10x · churn <2%.'));
+
+  if(d.rp.churn>1.05) insights.push(alertEl('wn',`${d.f.region} pesa en el churn`, `Tasa ${fmtComma(d.churnRate*100,1)}% vs media nacional.`));
+  else insights.push(alertEl('ok',`${d.f.region} tiene churn controlado`, `${fmtComma(d.churnRate*100,1)}% bajo umbral.`));
+
+  if(d.appUse>60) insights.push(alertEl('ok','Usuarios de app tienen 2,1x más visitas', 'Reforzar penetración digital.'));
+  else insights.push(alertEl('info','Oportunidad app', `Uso ${d.appUse}%. Cross-promoción app → frecuencia → LTV.`));
+
+  if(d.f.plan==='Premium') insights.push(alertEl('info','Premium representa el 30% del mix', 'Bundles + comunidad para subir a 35%.'));
+  else if(d.f.plan==='Basic') insights.push(alertEl('info','Basic concentra el churn alto', 'Empujar upgrade a Premium reduce churn 0,7pp.'));
+  else insights.push(alertEl('info','Mix Premium estable en 30%', 'Bundles para llegar a 35%.'));
+
+  if(d.f.seg==='Riesgo churn') insights.push(alertEl('bd','Segmento "Riesgo churn" detectado', 'Acción inmediata requerida.'));
+  else if(d.nps<40) insights.push(alertEl('bd','NPS bajo', `${d.nps} puntos en vista filtrada.`));
+  else insights.push(alertEl('ok','NPS saludable', `${d.nps} puntos en vista filtrada.`));
+
+  insights.push(alertEl('info',`Periodo ${d.f.periodo}`, `Métricas escaladas a ${d.f.periodo.toLowerCase()} para análisis comparativo.`));
+  document.getElementById('insightsList').innerHTML = insights.slice(0,6).join('');
+
+  const aa = [];
+  if(d.churnRate>0.045) aa.push(alertEl('bd','Crítico',`Churn ${fmtComma(d.churnRate*100,1)}% en ${d.f.region}`));
+  if(d.ltvCac<3) aa.push(alertEl('bd','Crítico',`LTV/CAC ${fmtComma(d.ltvCac,1)}x · modelo no escalable`));
+  if(d.cac>50) aa.push(alertEl('wn','Alerta',`CAC alto ${fmtComma(d.cac,1)}€`));
+  if(d.occ>85) aa.push(alertEl('wn','Alerta',`Saturación ${d.occ}%`));
+  if(d.netAdds>0) aa.push(alertEl('ok','Bueno',`Net adds +${esES(d.netAdds)} · ARR ${fmtMoney(d.arr)}`));
+  if(d.ltvCac>=8) aa.push(alertEl('ok','Bueno',`LTV/CAC ${fmtComma(d.ltvCac,1)}x · espacio para escalar`));
+  aa.push(alertEl('info','Informativo',`Vista actual: ${d.f.region} · ${d.f.canal} · ${d.f.plan} · ${d.f.periodo}`));
+  document.getElementById('alertsAll').innerHTML = aa.slice(0,5).join('');
+}
+
+const RECS = [
+  {a:'dir',label:'Dirección',t:'Bloquear inversión en regiones con LTV/CAC<6x y reasignar a top 3.',i:'+1,2pp margen'},
+  {a:'dir',label:'Dirección',t:'OKR Q3: reducir churn España a 3,4% mediante Customer 360.',i:'+540 socios retenidos/mes'},
+  {a:'mkt',label:'Marketing',t:'Reasignar 25% Paid Social → Email + Referral.',i:'-€7 CAC'},
+  {a:'mkt',label:'Marketing',t:'Doblar inversión en Referral (ROAS 10,8x · churn 1,7%).',i:'+820 altas/mes'},
+  {a:'crm',label:'CRM',t:'Journey anti-churn para usuarios sin visita 14 días.',i:'-0,4pp churn'},
+  {a:'crm',label:'CRM',t:'Campaña de upgrade Premium para alta frecuencia (>10 visitas).',i:'+1,2€ ARPU'},
+  {a:'ops',label:'Operaciones',t:'Reorganizar staff en clubes con ocupación >85% pico.',i:'+5 NPS'},
+  {a:'ops',label:'Operaciones',t:'Mantenimiento preventivo trimestral en top 20 clubes.',i:'-12% incidencias'},
+  {a:'app',label:'App',t:'Personalización del feed por frecuencia y plan.',i:'+8% DAU'},
+  {a:'app',label:'App',t:'Reto onboarding 4 semanas con badge in-app.',i:'+11pp retención D30'},
+  {a:'exp',label:'Expansión',t:'Abrir 2 clubes en Bilbao y 3 en Madrid sur en 18 meses.',i:'+13.600 socios potenciales'},
+  {a:'exp',label:'Expansión',t:'Cerrar/relocalizar clubes con NPS<35 y rentabilidad<15K€/mes.',i:'+1,8M € ahorro'},
+  {a:'bi',label:'Data/BI',t:'Construir Customer 360 unificado: CRM + app + accesos + pagos.',i:'Habilita modelos churn / LTV'},
+  {a:'bi',label:'Data/BI',t:'Modelo de churn predictivo con features de frecuencia + app + NPS.',i:'AUC objetivo 0,82'},
+  {a:'bi',label:'Data/BI',t:'Activar audiencias en CRM y paid desde el data warehouse.',i:'Cierra loop datos → activación'}
+];
+function renderRecsAll(filter='all'){
+  const list = filter==='all' ? RECS : RECS.filter(r=>r.a===filter);
+  document.getElementById('recList').innerHTML = list.map(r=>`<div class="rec-item"><span class="rec-area">${r.label}</span><div><div class="rec-text">${r.t}</div><span class="rec-impact">${r.i}</span></div></div>`).join('');
+}
+document.querySelectorAll('#recTabs .tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('#recTabs .tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    renderRecsAll(t.dataset.rec);
+  });
+});
+
+/* ============================================================
+   16. METHOD KPI TABLE
+   ============================================================ */
+function renderKPItable(filter=''){
+  const list = CURRENT_KPIS.filter(k=>(k.n+k.t+k.f).toLowerCase().includes(filter.toLowerCase()));
+  document.getElementById('kpiCount').textContent = list.length + ' / ' + CURRENT_KPIS.length + ' KPIs';
+  document.getElementById('tableKPIs').innerHTML = `
+    <thead><tr><th>KPI</th><th>Valor</th><th>Δ</th><th>Tipo</th><th>Fórmula</th><th>Estado</th></tr></thead>
+    <tbody>${list.map(k=>`<tr style="cursor:pointer" onclick='openModal(${JSON.stringify(k.n)})'><td><strong>${k.n}</strong></td><td>${k.v}</td><td>${k.d}</td><td>${k.t}</td><td><span class="formula" style="font-size:10.5px">${k.f}</span></td><td><span class="kpi-dot ${k.s}"></span></td></tr>`).join('')}</tbody>`;
+}
+document.getElementById('kpiSearch').addEventListener('input',e=>renderKPItable(e.target.value));
+function renderTech(){
+  const t=['Clustering K-means','Modelos de churn (XGBoost)','Árboles de decisión','Forecasting (Prophet/ARIMA)','Cohort analysis','Survival analysis','RFM segmentación','Uplift modeling','A/B testing','MMM Marketing Mix','Causal inference','Customer 360'];
+  document.getElementById('techList').innerHTML = t.map(x=>`<span class="badge b-as" style="font-size:11px;padding:5px 10px">${x}</span>`).join('');
+}
+
+/* ============================================================
+   17. FILTROS · UI + RENDER MASTER
+   ============================================================ */
+function buildFilterTag(f){
+  const parts = [];
+  parts.push(f.region);
+  if(f.ciudad!=='Todas') parts.push(f.ciudad);
+  if(f.club!=='Todos') parts.push(f.club);
+  parts.push(f.periodo);
+  if(f.canal!=='Todos') parts.push('Canal: '+f.canal);
+  if(f.plat!=='Todas') parts.push('Plat: '+f.plat);
+  if(f.plan!=='Todos') parts.push('Plan: '+f.plan);
+  if(f.seg!=='Todos') parts.push('Seg: '+f.seg);
+  if(f.idioma!=='Todos') parts.push('Idioma: '+f.idioma);
+  return parts.join(' · ') + ' · datos simulados';
+}
+
+function markActiveSelects(f){
+  const defaults = {fPeriodo:'Mensual',fRegion:'España total',fCiudad:'Todas',fClub:'Todos',fCanal:'Todos',fPlat:'Todas',fPlan:'Todos',fSeg:'Todos',fIdioma:'Todos'};
+  Object.entries(defaults).forEach(([id,def])=>{
+    const el = document.getElementById(id);
+    el.dataset.active = el.value !== def;
+  });
+}
+
+function flashActiveView(){
+  const v = document.querySelector('.view.active');
+  if(!v) return;
+  v.classList.remove('flash');
+  void v.offsetWidth;
+  v.classList.add('flash');
+  setTimeout(()=>v.classList.remove('flash'), 500);
+}
+
+function render(){
+  const f = getFilterState();
+  const d = getFilteredData(f);
+  CURRENT_DATA = d;
+  CURRENT_KPIS = buildKPIs(d);
+
+  document.getElementById('filterTag').textContent = buildFilterTag(f);
+  markActiveSelects(f);
+
+  renderKPIs();
+  renderDonut(d);
+  lineChart('chartMembers', buildMemberSeries(d), MONTHS, '#FF6B00');
+  lineChart('chartMRR', buildMRRSeries(d), MONTHS, '#1A1A1A');
+  renderTableRegions(d);
+  renderAlertsExec(d);
+  renderRecsExec(d);
+  renderTableChannels(d);
+  renderMarketingCharts(d);
+  renderChurnView(d);
+  renderRevenueView(d);
+  renderAppView(d);
+  renderRegionView(d);
+  runForecast();
+  renderEco();
+  renderInsights(d);
+  renderRecsAll(document.querySelector('#recTabs .tab.active')?.dataset.rec || 'all');
+  renderKPItable(document.getElementById('kpiSearch').value || '');
+  renderTech();
+
+  document.querySelectorAll('.formula').forEach(el=>el.style.display = document.getElementById('togFormulas').checked ? 'inline-block' : 'none');
+  document.querySelectorAll('.b-as, .b-sim, .b-fc, .b-case').forEach(el=>el.style.opacity = document.getElementById('togAssumptions').checked ? '1' : '0.2');
+
+  flashActiveView();
+}
+
+['fPeriodo','fRegion','fCiudad','fClub','fCanal','fPlat','fPlan','fSeg','fIdioma'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', render);
+});
+document.getElementById('btnReset').addEventListener('click',()=>{
+  document.getElementById('fPeriodo').value='Mensual';
+  document.getElementById('fRegion').value='España total';
+  document.getElementById('fCiudad').value='Todas';
+  document.getElementById('fClub').value='Todos';
+  document.getElementById('fCanal').value='Todos';
+  document.getElementById('fPlat').value='Todas';
+  document.getElementById('fPlan').value='Todos';
+  document.getElementById('fSeg').value='Todos';
+  document.getElementById('fIdioma').value='Todos';
+  document.querySelector('.scen[data-scen="base"]').click();
+  render();
+});
+document.getElementById('togFormulas').addEventListener('change', e=>{
+  document.querySelectorAll('.formula').forEach(el=>el.style.display = e.target.checked ? 'inline-block' : 'none');
+});
+document.getElementById('togAssumptions').addEventListener('change', e=>{
+  document.querySelectorAll('.b-as, .b-sim, .b-fc, .b-case').forEach(el=>el.style.opacity = e.target.checked ? '1' : '0.2');
+});
+
+document.getElementById('togFormulas').dispatchEvent(new Event('change'));
+render();
+</script>
+</body>
+</html>

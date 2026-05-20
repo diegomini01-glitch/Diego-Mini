@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coca-Cola x Esports: Case Study | Diego Miní</title>
+    <meta name="description" content="Next-Gen Fan Engagement: Coca-Cola x Esports. AI-powered gaming overlay and Discord community strategy. Case study by Diego Miní.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Global styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* ── Scoped case-study styles (light theme) ── */
+        .case-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 7rem 1.5rem 4rem;
+        }
+
+        .case-breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 2.5rem;
+            transition: color 0.2s;
+            font-weight: 600;
+        }
+        .case-breadcrumb:hover { color: var(--accent-red); }
+
+        .case-eyebrow {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-red);
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+            font-family: var(--font-mono);
+        }
+        .case-eyebrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent-red);
+        }
+
+        .case-page h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--accent-navy);
+            margin: 0 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+        }
+
+        .case-h1-sub {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        /* Meta bar */
+        .case-meta-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .case-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .case-meta-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+        .case-meta-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--accent-navy);
+        }
+
+        /* IP note */
+        .case-ip-note {
+            font-style: italic;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--accent-red);
+            padding: 0.75rem 1rem;
+            background: rgba(227,0,43,0.04);
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        /* Body sections */
+        .case-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .case-page h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-navy);
+            margin: 0 0 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .case-page p {
+            font-size: 1rem;
+            line-height: 1.75;
+            color: var(--text-secondary);
+            margin: 0 0 1rem;
+        }
+
+        .case-page p:last-child { margin-bottom: 0; }
+
+        /* Inline code for bot handle */
+        .case-page code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            background: rgba(227,0,43,0.07);
+            color: var(--accent-red);
+            border: 1px solid rgba(227,0,43,0.18);
+            border-radius: 3px;
+            padding: 0.1em 0.4em;
+        }
+
+        /* Bullet lists */
+        .case-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .case-list li {
+            font-size: 0.97rem;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            padding-left: 1.4rem;
+            position: relative;
+        }
+        .case-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.62em;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-red);
+        }
+
+        /* ── NDA CTA box ── */
+        .case-cta-box {
+            background: var(--bg-alt);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--accent-red);
+            border-radius: 0 0 4px 4px;
+            padding: 2.5rem;
+            margin-top: 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .case-cta-header { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .case-cta-eyebrow {
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-red);
+            font-family: var(--font-mono);
+            position: relative;
+            padding-bottom: 0.6rem;
+        }
+        .case-cta-eyebrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--accent-red);
+        }
+
+        .case-cta-box h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-navy);
+            margin: 0;
+        }
+
+        .case-cta-intro {
+            font-size: 0.97rem;
+            line-height: 1.75;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .case-cta-eyebrow-small {
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 0.6rem;
+        }
+
+        .case-cta-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .case-cta-list li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            padding-left: 1.4rem;
+            position: relative;
+        }
+        .case-cta-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6em;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-red);
+        }
+
+        /* Numbered list with red counters */
+        .case-cta-list-numbered {
+            counter-reset: cta-counter;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .case-cta-list-numbered li {
+            counter-increment: cta-counter;
+            padding-left: 1.75rem;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        .case-cta-list-numbered li::before {
+            content: counter(cta-counter) ".";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent-red);
+            font-weight: 700;
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
+        }
+
+        /* Buttons */
+        .case-cta-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .case-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .case-btn-primary {
+            background: var(--accent-red);
+            color: #fff;
+            border: 2px solid var(--accent-red);
+        }
+        .case-btn-primary:hover {
+            background: var(--accent-navy);
+            border-color: var(--accent-navy);
+            color: #fff;
+        }
+        .case-btn-secondary {
+            background: transparent;
+            color: var(--accent-navy);
+            border: 2px solid var(--accent-navy);
+        }
+        .case-btn-secondary:hover {
+            background: var(--accent-navy);
+            color: #fff;
+        }
+
+        .case-cta-footnote {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .case-page { padding: 6rem 1rem 3rem; }
+            .case-cta-box { padding: 1.5rem; }
+            .case-meta-bar { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <span class="logo-text">DM</span><span class="logo-dot">.</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li><a href="index.html#case-studies">Case Studies</a></li>
+                <li><a href="index.html#experience">Experience</a></li>
+                <li><a href="index.html#contact" class="btn-primary">Contact Me</a></li>
+            </ul>
+            <div class="mobile-menu-btn">
+                <i class="ph ph-list"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main class="case-page">
+
+        <!-- Breadcrumb -->
+        <a href="index.html#case-studies" class="case-breadcrumb">
+            <i class="ph ph-arrow-left"></i> Back to case studies
+        </a>
+
+        <!-- Eyebrow -->
+        <div class="case-eyebrow">Case Study · Sponsorships &amp; Fan Engagement</div>
+
+        <!-- Title -->
+        <h1>Next-Gen Fan Engagement</h1>
+        <p class="case-h1-sub">Coca-Cola × Esports</p>
+
+        <!-- Meta bar -->
+        <div class="case-meta-bar">
+            <div class="case-meta-item">
+                <span class="case-meta-label">Role</span>
+                <span class="case-meta-value">Team lead · Concept author</span>
+            </div>
+            <div class="case-meta-item">
+                <span class="case-meta-label">Context</span>
+                <span class="case-meta-value">IE Business School · MSMC</span>
+            </div>
+            <div class="case-meta-item">
+                <span class="case-meta-label">Brief</span>
+                <span class="case-meta-value">Integrated Marketing Communication</span>
+            </div>
+            <div class="case-meta-item">
+                <span class="case-meta-label">Team</span>
+                <span class="case-meta-value">5 students · 2025</span>
+            </div>
+        </div>
+
+        <!-- IP disclaimer -->
+        <p class="case-ip-note">
+            Coca-Cola wordmarks and brand visuals are not displayed on this public page. This was an academic team project; no engagement with Coca-Cola took place. The full deck is available on request under NDA.
+        </p>
+
+        <!-- The challenge -->
+        <div class="case-section">
+            <h2>The challenge</h2>
+            <p>A legacy FMCG brand needed an authentic way into the esports ecosystem, beyond logo placement. The target audience (Gen Z gamers) is highly resistant to traditional advertising and brand intrusion into gameplay. Sponsorship for the sake of sponsorship doesn't work here; the brand has to earn its place inside the experience.</p>
+        </div>
+
+        <!-- The insight -->
+        <div class="case-section">
+            <h2>The insight</h2>
+            <p>Gamers don't fear losing; they fear leaving 'the zone.' Their biggest enemy isn't a competitor; it's the energy crash mid-session. A drink brand has a credible role to play here, not as a sponsor, but as a performance system.</p>
+        </div>
+
+        <!-- The concept -->
+        <div class="case-section">
+            <h2>The concept: The Recharge Radar</h2>
+            <p>An AI-powered gaming overlay that detects player fatigue through input patterns and webcam micro-behavior, then prompts a real-world recharge moment. Multi-platform delivery: downloadable overlay, OBS/Twitch extension, and API for games and Discord, meeting the audience where they already play. Brand integration happens at the fatigue-detection moment, with a real-time prompt and a gamified leaderboard tracking longest 'recharge streaks.'</p>
+        </div>
+
+        <!-- Phase 1 -->
+        <div class="case-section">
+            <h2>Phase 1: The Recharge Hub (Tease)</h2>
+            <p>An invite-only Discord server seeded into existing gaming communities. A custom bot, <code>@Protocol_Recharge</code>, drops cryptic invites: 'Recharge Protocol: Initiated.' FOMO and gated-access mechanics drive early hype before the brand reveal.</p>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="case-section">
+            <h2>Phase 2: The Reveal</h2>
+            <p>Following the Discord tease, Phase 2 transitions the audience from cryptic anticipation to brand reveal through gaming-influencer partnerships and a curated unboxing PR experience. Top-tier streamers receive a 'Recharge Boost' kit and stream their first encounter with the AI overlay live. Visual mockups from this phase are not shown on this public page to respect Coca-Cola's brand intellectual property. Full visuals are available in the deck on request.</p>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="case-section">
+            <h2>Phase 3: Esports World Cup Popup (Activation)</h2>
+            <p>The live-event extension: an on-site 'Energy Zone' at the Esports World Cup with a reaction-test mini-game, a digital leaderboard, and product sampling tied to the fatigue narrative. The full activation includes the venue concept, mini-game mechanics, and sampling strategy, available in the deck on request.</p>
+        </div>
+
+        <!-- Research foundation -->
+        <div class="case-section">
+            <h2>Research foundation</h2>
+            <p>The Discord-first activation was grounded in consumer research:</p>
+            <ul class="case-list">
+                <li>70%+ of Discord users identify as gamers</li>
+                <li>Brand-activated Discord servers (Chipotle, Riot Games) show 25–30% higher participation in challenges</li>
+                <li>Joining a brand Discord lifts purchase intent by 25%</li>
+                <li>Gated, invite-only access produces the strongest response</li>
+            </ul>
+            <p style="margin-top: 1rem;">The activation map followed where the audience already lives, with measured purchase-intent uplift from community-based brand experiences.</p>
+        </div>
+
+        <!-- What this work demonstrates -->
+        <div class="case-section">
+            <h2>What this work demonstrates</h2>
+            <ul class="case-list">
+                <li>Translating an audience insight into a product-led brand activation, not a campaign</li>
+                <li>Designing AI-driven brand utility: a tool the audience uses rather than an ad they ignore</li>
+                <li>Channel and community design (Discord, Twitch, OBS extensions) for gaming audiences</li>
+                <li>Research-led activation grounded in deterministic and probabilistic consumer data</li>
+                <li>Multi-phase integrated marketing communication structure (tease, reveal, activation)</li>
+            </ul>
+        </div>
+
+        <!-- NDA CTA -->
+        <aside class="case-cta-box">
+            <div class="case-cta-header">
+                <div class="case-cta-eyebrow">Want the full picture?</div>
+                <h3>Request the complete deck under NDA</h3>
+            </div>
+
+            <p class="case-cta-intro">
+                This page presents the strategic narrative. The full deck contains the visual concept work,
+                detailed channel mechanics, budget breakdowns, and brand-asset mockups developed during the project.
+                Shared on request under a mutual NDA, typically for hiring conversations, partnership discussions,
+                or academic review.
+            </p>
+
+            <div class="case-cta-what-youll-see">
+                <div class="case-cta-eyebrow-small">What you'll get</div>
+                <ul class="case-cta-list">
+                    <li>The full 28-page strategic deck</li>
+                    <li>All three activation phase visuals (tease, reveal, live activation)</li>
+                    <li>Detailed channel mechanics, influencer strategy, and event design</li>
+                    <li>Consumer research underpinning the Discord-first approach</li>
+                    <li>A 20-minute walkthrough call if useful</li>
+                </ul>
+            </div>
+
+            <div class="case-cta-how-it-works">
+                <div class="case-cta-eyebrow-small">How it works</div>
+                <ol class="case-cta-list-numbered">
+                    <li>Email me at the link below with your role and the company / context.</li>
+                    <li>I send back a one-page mutual NDA (or accept yours).</li>
+                    <li>Once signed, you get the full deck and optional 20-minute walkthrough.</li>
+                </ol>
+            </div>
+
+            <div class="case-cta-buttons">
+                <a href="mailto:diegomini01@gmail.com?subject=Coca-Cola%20%C3%97%20Esports%20%E2%80%94%20Full%20deck%20request%20(NDA)&body=Hi%20Diego%2C%0A%0AI%27d%20like%20to%20review%20the%20full%20deck%20under%20NDA.%0A%0AContext%3A%20%5Byour%20role%20%2F%20company%20%2F%20purpose%5D%0A%0AThanks%21" class="case-btn case-btn-primary">
+                    <i class="ph ph-envelope"></i> Request deck access
+                </a>
+                <a href="https://linkedin.com/in/diego-mini/" target="_blank" class="case-btn case-btn-secondary">
+                    <i class="ph ph-linkedin-logo"></i> Connect on LinkedIn first
+                </a>
+            </div>
+
+            <p class="case-cta-footnote">
+                Typical response time: 24 hours on weekdays. For recruiters: please include the role and company in the subject line.
+            </p>
+        </aside>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="section-container">
+            <div class="footer-content">
+                <div class="logo">
+                    <span class="logo-text">DM</span><span class="logo-dot">.</span>
+                </div>
+                <p class="footer-copyright">&copy; 2026 Diego Miní. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -18,11 +18,26 @@
     <link rel="stylesheet" href="styles.css">
 
     <style>
+        /* ── Hero banner ── */
+        .case-hero-banner {
+            width: 100%;
+            height: 320px;
+            margin-top: var(--nav-height);
+            overflow: hidden;
+        }
+        .case-hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
         /* ── Scoped case-study styles (light theme) ── */
         .case-page {
             max-width: 800px;
             margin: 0 auto;
-            padding: 7rem 1.5rem 4rem;
+            padding: 2.5rem 1.5rem 4rem;
         }
 
         .case-breadcrumb {
@@ -76,7 +91,6 @@
             margin-bottom: 2.5rem;
         }
 
-        /* Meta bar */
         .case-meta-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -87,11 +101,7 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        .case-meta-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
+        .case-meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
         .case-meta-label {
             font-size: 0.72rem;
             letter-spacing: 0.1em;
@@ -99,13 +109,8 @@
             color: var(--text-muted);
             font-family: var(--font-mono);
         }
-        .case-meta-value {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--accent-navy);
-        }
+        .case-meta-value { font-size: 0.95rem; font-weight: 600; color: var(--accent-navy); }
 
-        /* IP note */
         .case-ip-note {
             font-style: italic;
             font-size: 0.88rem;
@@ -118,10 +123,7 @@
             line-height: 1.6;
         }
 
-        /* Body sections */
-        .case-section {
-            margin-bottom: 2.5rem;
-        }
+        .case-section { margin-bottom: 2.5rem; }
 
         .case-page h2 {
             font-size: 1.2rem;
@@ -140,10 +142,8 @@
             color: var(--text-secondary);
             margin: 0 0 1rem;
         }
-
         .case-page p:last-child { margin-bottom: 0; }
 
-        /* Bullet lists */
         .case-list {
             list-style: none;
             padding: 0;
@@ -170,7 +170,6 @@
             background: var(--accent-red);
         }
 
-        /* ── NDA CTA box ── */
         .case-cta-box {
             background: var(--bg-alt);
             border: 1px solid var(--border-color);
@@ -182,9 +181,7 @@
             flex-direction: column;
             gap: 1.5rem;
         }
-
         .case-cta-header { display: flex; flex-direction: column; gap: 0.5rem; }
-
         .case-cta-eyebrow {
             font-size: 0.78rem;
             font-weight: 600;
@@ -204,21 +201,8 @@
             height: 2px;
             background: var(--accent-red);
         }
-
-        .case-cta-box h3 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--accent-navy);
-            margin: 0;
-        }
-
-        .case-cta-intro {
-            font-size: 0.97rem;
-            line-height: 1.75;
-            color: var(--text-secondary);
-            margin: 0;
-        }
-
+        .case-cta-box h3 { font-size: 1.4rem; font-weight: 700; color: var(--accent-navy); margin: 0; }
+        .case-cta-intro { font-size: 0.97rem; line-height: 1.75; color: var(--text-secondary); margin: 0; }
         .case-cta-eyebrow-small {
             font-size: 0.72rem;
             letter-spacing: 0.1em;
@@ -227,15 +211,7 @@
             font-family: var(--font-mono);
             margin-bottom: 0.6rem;
         }
-
-        .case-cta-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.55rem;
-        }
+        .case-cta-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.55rem; }
         .case-cta-list li {
             font-size: 0.95rem;
             line-height: 1.6;
@@ -253,8 +229,6 @@
             border-radius: 50%;
             background: var(--accent-red);
         }
-
-        /* Numbered list with red counters */
         .case-cta-list-numbered {
             counter-reset: cta-counter;
             list-style: none;
@@ -282,13 +256,7 @@
             font-size: 0.9rem;
             font-family: var(--font-mono);
         }
-
-        /* Buttons */
-        .case-cta-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
+        .case-cta-buttons { display: flex; flex-wrap: wrap; gap: 1rem; }
         .case-btn {
             display: inline-flex;
             align-items: center;
@@ -304,36 +272,15 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .case-btn-primary {
-            background: var(--accent-red);
-            color: #fff;
-            border: 2px solid var(--accent-red);
-        }
-        .case-btn-primary:hover {
-            background: var(--accent-navy);
-            border-color: var(--accent-navy);
-            color: #fff;
-        }
-        .case-btn-secondary {
-            background: transparent;
-            color: var(--accent-navy);
-            border: 2px solid var(--accent-navy);
-        }
-        .case-btn-secondary:hover {
-            background: var(--accent-navy);
-            color: #fff;
-        }
+        .case-btn-primary { background: var(--accent-red); color: #fff; border: 2px solid var(--accent-red); }
+        .case-btn-primary:hover { background: var(--accent-navy); border-color: var(--accent-navy); color: #fff; }
+        .case-btn-secondary { background: transparent; color: var(--accent-navy); border: 2px solid var(--accent-navy); }
+        .case-btn-secondary:hover { background: var(--accent-navy); color: #fff; }
+        .case-cta-footnote { font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin: 0; }
 
-        .case-cta-footnote {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-style: italic;
-            margin: 0;
-        }
-
-        /* Responsive */
         @media (max-width: 600px) {
-            .case-page { padding: 6rem 1rem 3rem; }
+            .case-hero-banner { height: 200px; }
+            .case-page { padding: 2rem 1rem 3rem; }
             .case-cta-box { padding: 1.5rem; }
             .case-meta-bar { grid-template-columns: 1fr 1fr; }
         }
@@ -360,21 +307,22 @@
         </div>
     </nav>
 
+    <!-- Hero Banner -->
+    <div class="case-hero-banner">
+        <img src="Beefeater Limon.png" alt="Beefeater Limón Campaign">
+    </div>
+
     <main class="case-page">
 
-        <!-- Breadcrumb -->
         <a href="index.html#case-studies" class="case-breadcrumb">
             <i class="ph ph-arrow-left"></i> Back to case studies
         </a>
 
-        <!-- Eyebrow -->
-        <div class="case-eyebrow">Case Study · Marketing Strategy &amp; Events</div>
+        <div class="case-eyebrow">Case Study · Integrated Marketing Strategy</div>
 
-        <!-- Title -->
         <h1>Integrated Campaign</h1>
         <p class="case-h1-sub">Beefeater Limón</p>
 
-        <!-- Meta bar -->
         <div class="case-meta-bar">
             <div class="case-meta-item">
                 <span class="case-meta-label">Role</span>
@@ -394,30 +342,25 @@
             </div>
         </div>
 
-        <!-- IP disclaimer -->
         <p class="case-ip-note">
             Beefeater wordmarks and brand visuals are not displayed on this public page. This was an academic team project; no engagement with Beefeater took place. The full deck is available on request under NDA.
         </p>
 
-        <!-- The challenge -->
         <div class="case-section">
             <h2>The challenge</h2>
             <p>A legacy spirits brand looking to reposition for Gen Z and younger millennials in a category dominated by craft cocktails and ready-to-drink alternatives. The brief: an integrated campaign across earned, owned, and paid media that breaks beyond traditional spirits advertising and earns cultural relevance.</p>
         </div>
 
-        <!-- The insight -->
         <div class="case-section">
             <h2>The insight</h2>
             <p>Gen Z doesn't drink the way previous generations did. They drink less, they drink more deliberately, and they share the experience before the taste. The opportunity wasn't to sell more gin; it was to create a gin moment worth posting about. The Limón variant gave us a sensory anchor: a flavor cue that could carry a brand story without leaning on heritage.</p>
         </div>
 
-        <!-- The concept -->
         <div class="case-section">
             <h2>The concept: Lemon Drop Pop Up</h2>
             <p>A multi-touchpoint activation centered on the 'Lemon Drop Pop Up': a recurring, location-specific experiential event combining physical sampling, AI-powered confessional stands, and a gamified TikTok filter that turns participation into shareable content. The campaign operates across three integrated channels: earned (PR + influencer organic reach), owned (TikTok filter + brand-owned event nights), and paid (geo-targeted social and venue media).</p>
         </div>
 
-        <!-- Channel strategy -->
         <div class="case-section">
             <h2>Channel strategy</h2>
             <p>The integrated channel mix:</p>
@@ -429,13 +372,11 @@
             </ul>
         </div>
 
-        <!-- Budget allocation -->
         <div class="case-section">
             <h2>Budget allocation</h2>
             <p>Across digital and physical touchpoints, the campaign deployed a €500k budget with deliberate allocation: experiential activation as the lead investment, social-first content production as the volume driver, and paid amplification calibrated to extend organic reach in priority cities. The detailed budget breakdown is in the deck, available on request.</p>
         </div>
 
-        <!-- What this work demonstrates -->
         <div class="case-section">
             <h2>What this work demonstrates</h2>
             <ul class="case-list">
@@ -447,20 +388,17 @@
             </ul>
         </div>
 
-        <!-- NDA CTA -->
         <aside class="case-cta-box">
             <div class="case-cta-header">
                 <div class="case-cta-eyebrow">Want the full picture?</div>
                 <h3>Request the complete deck under NDA</h3>
             </div>
-
             <p class="case-cta-intro">
                 This page presents the strategic narrative. The full deck contains the visual concept work,
                 detailed channel mechanics, budget breakdowns, and brand-asset mockups developed during the project.
                 Shared on request under a mutual NDA, typically for hiring conversations, partnership discussions,
                 or academic review.
             </p>
-
             <div class="case-cta-what-youll-see">
                 <div class="case-cta-eyebrow-small">What you'll get</div>
                 <ul class="case-cta-list">
@@ -471,7 +409,6 @@
                     <li>Full €500k budget allocation across activations</li>
                 </ul>
             </div>
-
             <div class="case-cta-how-it-works">
                 <div class="case-cta-eyebrow-small">How it works</div>
                 <ol class="case-cta-list-numbered">
@@ -480,7 +417,6 @@
                     <li>Once signed, you get the full deck and optional 20-minute walkthrough.</li>
                 </ol>
             </div>
-
             <div class="case-cta-buttons">
                 <a href="mailto:diegomini01@gmail.com?subject=Beefeater%20Lim%C3%B3n%20%E2%80%94%20Full%20deck%20request%20(NDA)&body=Hi%20Diego%2C%0A%0AI%27d%20like%20to%20review%20the%20full%20deck%20under%20NDA.%0A%0AContext%3A%20%5Byour%20role%20%2F%20company%20%2F%20purpose%5D%0A%0AThanks%21" class="case-btn case-btn-primary">
                     <i class="ph ph-envelope"></i> Request deck access
@@ -489,7 +425,6 @@
                     <i class="ph ph-linkedin-logo"></i> Connect on LinkedIn first
                 </a>
             </div>
-
             <p class="case-cta-footnote">
                 Typical response time: 24 hours on weekdays. For recruiters: please include the role and company in the subject line.
             </p>
@@ -497,7 +432,6 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="section-container">
             <div class="footer-content">
